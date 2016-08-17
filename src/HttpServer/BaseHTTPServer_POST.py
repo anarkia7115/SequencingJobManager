@@ -44,6 +44,7 @@ class PostHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
         self.data_json = json.loads(self.data_string)
+        print(myprint(self.data_json))
         self.wfile.write(myprint(self.data_json))
         return
 
