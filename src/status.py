@@ -23,17 +23,17 @@ class StatusChecker():
         return status
     #TODO
     def checkHdfsFile(self, filePath):
-        print "hdfsFile: {} exists!".format(filePath)
+        print "hdfsFile: {0} exists!".format(filePath)
         return True
 
     #TODO
     def checkLocalFile(self, filePath):
-        print "localFile: {} exists!".format(filePath)
+        print "localFile: {0} exists!".format(filePath)
         return True
 
     #TODO
     def checkHadoopJob(self, jobID):
-        print "{} finished!".format(jobID)
+        print "{0} finished!".format(jobID)
         return True
 
 class RequestSender():
@@ -60,7 +60,7 @@ class RequestSender():
                                                   path=path)
 
         r = requests.post(url, json=dictJson)
-        print "[RequestSender] {} posted to {}".format(dictJson, url)
+        print "[RequestSender] {0} posted to {1}".format(dictJson, url)
         return
 
 

@@ -36,7 +36,7 @@ class StepManager():
                 # if step meets all prerequisites but not running
                 elif s.isReady():
                     s.start(s.getArgs())
-                    print "{} is started".format(s.getStepName())
+                    print "{0} is started".format(s.getStepName())
                     time.sleep(1)
                     break
             # self end 
@@ -78,7 +78,7 @@ class Step():
         if self.step == "distribution":
             self.execType = "cl"
             # self.prerequisites is empty
-            self.finishSignal = "hdfs://{}:9000/signal/dist_{}".format(self.hdfsHost,
+            self.finishSignal = "hdfs://{0}:9000/signal/dist_{1}".format(self.hdfsHost,
                                                              self.jobID)
         elif self.step == "alignment":
             self.execType = "ha"
@@ -92,15 +92,15 @@ class Step():
             self.execType = "cl"
             self.prerequisites.add("variation")
             self.prerequisites.add("qc")
-            self.finishSignal = "hdfs://{}:9000/signal/pkg_{}".format(self.hdfsHost,
+            self.finishSignal = "hdfs://{0}:9000/signal/pkg_{1}".format(self.hdfsHost,
                                                              self.jobID)
         elif self.step == "qc":
             self.execType = "cl"
             self.prerequisites.add("distribution")
-            self.finishSignal = "hdfs://{}:9000/signal/qc_{}".format(self.hdfsHost,
+            self.finishSignal = "hdfs://{0}:9000/signal/qc_{1}".format(self.hdfsHost,
                                                              self.jobID)
         else:
-            print >> sys.stderr, "unknown step name: {}".format(self.step)
+            print >> sys.stderr, "unknown step name: {0}".format(self.step)
             sys.exit(-1)
 
         # init status checker
@@ -117,7 +117,7 @@ class Step():
         elif self.execType == 'ha':
             xqtr = HadoopAppExecutor(args)
         else:
-            print >> sys.stderr, "unknown execType: {}".format(self.execType)
+            print >> sys.stderr, "unknown execType: {0}".format(self.execType)
             sys.exit(-1)
 
         self.status = "running"

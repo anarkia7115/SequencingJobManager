@@ -28,7 +28,7 @@ class ArgsGenerator():
             sampleList = self.argsDict['sampleList']
 
             # generate sample list manifest
-            manifestFileName = "/tmp/sample_{}".format(self.accession)
+            manifestFileName = "/tmp/sample_{0}".format(self.accession)
             manifest = open(manifestFileName, 'w')
             for l in sampleList:
                 manifest.write(l)
@@ -38,7 +38,7 @@ class ArgsGenerator():
 
             # init args
             jarFile = "../lib/halvade_upload-1.0-no_local-jar-with-dependencies.jar"
-            output = "hdfs://{}/user/GCBI/sequencing/fastq_{}".format(hdfsHost,
+            output = "hdfs://{0}/user/GCBI/sequencing/fastq_{1}".format(hdfsHost,
                                                                      self.processID) 
             threadNum = 30
 
@@ -51,14 +51,14 @@ class ArgsGenerator():
 
         elif step == 'alignment':
             # init args
-            inputFile = "hdfs://{}/user/GCBI/sequencing/fastq_{}".format(hdfsHost,
+            inputFile = "hdfs://{0}/user/GCBI/sequencing/fastq_{1}".format(hdfsHost,
                                                              self.processID)
-            outputFile = "hdfs://{}/user/GCBI/sequencing/align_{}".format(hdfsHost,
+            outputFile = "hdfs://{0}/user/GCBI/sequencing/align_{1}".format(hdfsHost,
                                                              self.processID)
 
-            nonUseVcf = "hdfs://{}:9000/tmp/dbsnp_138.hg38.vcf".format(hdfsHost)
-            binFile = "hdfs://{}:9000/user/GCBI/bin.tar.gz".format(hdfsHost)
-            ref = "hdfs://{}:9000/ref/hg38/hg38".format(hdfsHost)
+            nonUseVcf = "hdfs://{0}:9000/tmp/dbsnp_138.hg38.vcf".format(hdfsHost)
+            binFile = "hdfs://{0}:9000/user/GCBI/bin.tar.gz".format(hdfsHost)
+            ref = "hdfs://{0}:9000/ref/hg38/hg38".format(hdfsHost)
             jarFile = "../lib/align_filter-wxz-1.0.jar"
             tmpFile = "/tmp/halvade"
             vcores = 30
@@ -88,14 +88,14 @@ class ArgsGenerator():
             
         elif step == 'variation':
             # init args
-            inputFile = "hdfs://{}/user/GCBI/sequencing/align_{}".format(hdfsHost,
+            inputFile = "hdfs://{0}/user/GCBI/sequencing/align_{1}".format(hdfsHost,
                                                              self.processID)
-            outputFile = "hdfs://{}/user/GCBI/sequencing/snp_{}".format(hdfsHost,
+            outputFile = "hdfs://{0}/user/GCBI/sequencing/snp_{1}".format(hdfsHost,
                                                              self.processID)
 
-            nonUseVcf = "hdfs://{}:9000/tmp/dbsnp_138.hg38.vcf".format(hdfsHost)
-            binFile = "hdfs://{}:9000/user/GCBI/bin.tar.gz".format(hdfsHost)
-            ref = "hdfs://{}:9000/ref/hg38/hg38".format(hdfsHost)
+            nonUseVcf = "hdfs://{0}:9000/tmp/dbsnp_138.hg38.vcf".format(hdfsHost)
+            binFile = "hdfs://{0}:9000/user/GCBI/bin.tar.gz".format(hdfsHost)
+            ref = "hdfs://{0}:9000/ref/hg38/hg38".format(hdfsHost)
             jarFile = "~/jars/snv_job-wxz-1.2.jar"
             vcores = 30
             nodes = 6
@@ -127,7 +127,7 @@ class ArgsGenerator():
             args = "qc arg string"
             return args
         else:
-            print >> sys.stderr, "[Error] unknown step: {}".format(step)
+            print >> sys.stderr, "[Error] unknown step: {0}".format(step)
             sys.exit(-1)
 
     def getStepInfo(self, dataJson):
@@ -142,7 +142,7 @@ class ArgsGenerator():
         # sample paths
         sampleList = []
         sl = dataJson['sampleList'][0]
-        for p in sl['fastqFileList']:
+        for p in sl['fastqFile']:
             # parse keys
             k1 = p['mateFile1']['key']
             k2 = p['mateFile2']['key']

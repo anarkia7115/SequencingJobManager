@@ -13,7 +13,7 @@ class CommandLineExecutor():
         return
 
     def run(self):
-        print "running: {}".format(self.args)
+        print "running: {0}".format(self.args)
         return
 
 
@@ -23,5 +23,5 @@ class HadoopAppExecutor():
         return
 
     def run(self):
-        print "running: {}".format(self.args)
+        print "running: {0}".format(self.args)
         return

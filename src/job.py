@@ -75,7 +75,7 @@ class RequestMonitor(BaseHTTPRequestHandler):
 
         server = HTTPServer((self.localServer, self.localPort), PostHandler)
         print 'Starting server, use <Ctrl-C> to stop'
-        print "server: {} port: {}".format(self.localServer, self.localPort)
+        print "server: {0} port: {1}".format(self.localServer, self.localPort)
         server.serve_forever()
         return
 
@@ -101,6 +101,9 @@ class PostHandler(BaseHTTPRequestHandler):
 
     def startNewJob(self):
 
+        print "----json start----"
+        print self.data_json
+        print "----json end----"
         jm = JobManager(self.data_json)
 
         # run background
