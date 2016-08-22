@@ -1,6 +1,8 @@
 host = dict(
     hdfs = "node19:9000",
-    request = "192.168.2.156:8081"
+    request = "192.168.2.156:8081",
+    local_server_host = "192.168.2.156",
+    local_server_port = 8080
 )
 
 jar = dict(

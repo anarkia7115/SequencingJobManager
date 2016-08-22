@@ -55,25 +55,15 @@ class JobManager():
 
 class RequestMonitor(BaseHTTPRequestHandler):
     # monitor requests
-    def __init__(self, server=None, port=None):
-        if server is None:
-            self.localServer = "192.168.2.156"
-        else:
-            self.localServer = server
-
-        if port is None:
-            self.localPort = 8080
-        else:
-            self.localPort = port
-
-        self.currentJobID = 0
+    def __init__(self):
 
         return
 
     def loop(self):
         from BaseHTTPServer import HTTPServer
 
-        server = HTTPServer((self.localServer, self.localPort), PostHandler)
+        server = HTTPServer((config.host['local_server_host'],
+                             config.host['local_server_port']), PostHandler)
         print 'Starting server, use <Ctrl-C> to stop'
         print "server: {0} port: {1}".format(self.localServer, self.localPort)
         server.serve_forever()
