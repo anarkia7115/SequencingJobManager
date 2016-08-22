@@ -2,6 +2,7 @@
 import json
 import urllib2
 import requests
+import config
 from datetime import datetime
 
 class StatusChecker():
@@ -38,8 +39,6 @@ class StatusChecker():
 
 class RequestSender():
     def __init__(self, processID, accession):
-        self.requestHost = "192.168.2.156"
-        self.requestPort = 8081
 
         self.accession = accession
         self.processID = processID
@@ -55,9 +54,7 @@ class RequestSender():
 
     def post(self, dictJson, path):
 
-        url = "http://{host}:{port}{path}".format(host=self.requestHost,
-                                                  port=self.requestPort,
-                                                  path=path)
+        url = "http://{host}{path}".format(host=config.host['request'], path=path)
 
         r = requests.post(url, json=dictJson)
         print "[RequestSender] {0} posted to {1}".format(dictJson, url)

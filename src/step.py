@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import time
 import sys
+import config
 
 class StepManager():
 
@@ -65,7 +66,6 @@ class Step():
     def __init__(self, stepName, jobID, argsGen, rs):
 
         self.status = "pending"
-        self.hdfsHost = "node19"
 
         self.step = stepName
         self.jobID = jobID
@@ -78,8 +78,7 @@ class Step():
         if self.step == "distribution":
             self.execType = "cl"
             # self.prerequisites is empty
-            self.finishSignal = "hdfs://{0}:9000/signal/dist_{1}".format(self.hdfsHost,
-                                                             self.jobID)
+            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
         elif self.step == "alignment":
             self.execType = "ha"
             self.prerequisites.add("distribution")
@@ -92,13 +91,12 @@ class Step():
             self.execType = "cl"
             self.prerequisites.add("variation")
             self.prerequisites.add("qc")
-            self.finishSignal = "hdfs://{0}:9000/signal/pkg_{1}".format(self.hdfsHost,
-                                                             self.jobID)
+            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
         elif self.step == "qc":
             self.execType = "cl"
             self.prerequisites.add("distribution")
-            self.finishSignal = "hdfs://{0}:9000/signal/qc_{1}".format(self.hdfsHost,
-                                                             self.jobID)
+            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
+
         else:
             print >> sys.stderr, "unknown step name: {0}".format(self.step)
             sys.exit(-1)

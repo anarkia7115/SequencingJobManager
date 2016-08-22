@@ -2,6 +2,7 @@
 # -*- coding: iso-8859-15 -*-
 
 import sys
+import config
 
 class ArgsGenerator():
 
@@ -21,14 +22,13 @@ class ArgsGenerator():
         return self.resultPath
 
     def generateArgs(self, step):
-        hdfsHost = "node19:9000"
 
         if step == 'distribution':
             # get args
             sampleList = self.argsDict['sampleList']
 
             # generate sample list manifest
-            manifestFileName = "/tmp/sample_{0}".format(self.accession)
+            manifestFileName = config.local_config['tmp_manifest'].format(self.accession)
             manifest = open(manifestFileName, 'w')
             for l in sampleList:
                 manifest.write(l)
@@ -37,9 +37,8 @@ class ArgsGenerator():
             manifest.close()
 
             # init args
-            jarFile = "../lib/halvade_upload-1.0-no_local-jar-with-dependencies.jar"
-            output = "hdfs://{0}/user/GCBI/sequencing/fastq_{1}".format(hdfsHost,
-                                                                     self.processID) 
+            jarFile = config.jar['upload']
+            output = config.hdfs_out['upload'].format(self.processID) 
             threadNum = 30
 
             # generate args
@@ -51,16 +50,14 @@ class ArgsGenerator():
 
         elif step == 'alignment':
             # init args
-            inputFile = "hdfs://{0}/user/GCBI/sequencing/fastq_{1}".format(hdfsHost,
-                                                             self.processID)
-            outputFile = "hdfs://{0}/user/GCBI/sequencing/align_{1}".format(hdfsHost,
-                                                             self.processID)
+            inputFile = config.hdfs_in['align'].format(self.processID)
+            outputFile = config.hdfs_out['align'].format(self.processID)
 
-            nonUseVcf = "hdfs://{0}:9000/tmp/dbsnp_138.hg38.vcf".format(hdfsHost)
-            binFile = "hdfs://{0}:9000/user/GCBI/bin.tar.gz".format(hdfsHost)
-            ref = "hdfs://{0}:9000/ref/hg38/hg38".format(hdfsHost)
-            jarFile = "../lib/align_filter-wxz-1.0.jar"
-            tmpFile = "/tmp/halvade"
+            nonUseVcf = config.hdfs_config['empty_vcf']
+            binFile = config.hdfs_config['bin']
+            ref = config.hdfs_config['ref']
+            jarFile = config.jar['align']
+            tmpFile = config.local_config['tmp_folder']
             vcores = 30
             nodes = 6
             mem = 110
@@ -88,15 +85,13 @@ class ArgsGenerator():
             
         elif step == 'variation':
             # init args
-            inputFile = "hdfs://{0}/user/GCBI/sequencing/align_{1}".format(hdfsHost,
-                                                             self.processID)
-            outputFile = "hdfs://{0}/user/GCBI/sequencing/snp_{1}".format(hdfsHost,
-                                                             self.processID)
+            inputFile = config.hdfs_in['snv'].format(self.processID)
+            outputFile = config.hdfs_out['snv'].format(self.processID)
 
-            nonUseVcf = "hdfs://{0}:9000/tmp/dbsnp_138.hg38.vcf".format(hdfsHost)
-            binFile = "hdfs://{0}:9000/user/GCBI/bin.tar.gz".format(hdfsHost)
-            ref = "hdfs://{0}:9000/ref/hg38/hg38".format(hdfsHost)
-            jarFile = "~/jars/snv_job-wxz-1.2.jar"
+            nonUseVcf = config.hdfs_config['empty_vcf']
+            binFile = config.hdfs_config['bin']
+            ref = config.hdfs_config['ref']
+            jarFile = config.jar['snv']
             vcores = 30
             nodes = 6
             mem = 110
