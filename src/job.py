@@ -4,6 +4,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 from multiprocessing import Process
 import cgi
 import json
+import config
 
 class JobManager():
 
@@ -65,7 +66,9 @@ class RequestMonitor(BaseHTTPRequestHandler):
         server = HTTPServer((config.host['local_server_host'],
                              config.host['local_server_port']), PostHandler)
         print 'Starting server, use <Ctrl-C> to stop'
-        print "server: {0} port: {1}".format(self.localServer, self.localPort)
+        print "server: {0} port: {1}".format(
+                                    config.host['local_server_host'], 
+                                    config.host['local_server_port'])
         server.serve_forever()
         return
 
