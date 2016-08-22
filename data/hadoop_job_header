@@ -1,0 +1,11 @@
+16/08/22 19:09:47 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted output
+16/08/22 19:09:49 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+16/08/22 19:09:49 INFO input.FileInputFormat: Total input paths to process : 2
+16/08/22 19:09:50 INFO mapreduce.JobSubmitter: number of splits:18
+16/08/22 19:09:50 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1471864066146_0001
+16/08/22 19:09:50 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1471864066146_0001
+16/08/22 19:09:50 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1471864066146_0001
+16/08/22 19:09:50 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1471864066146_0001
+16/08/22 19:09:50 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1471864066146_0001
+16/08/22 19:09:50 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1471864066146_0001

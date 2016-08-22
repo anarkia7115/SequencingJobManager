@@ -63,7 +63,7 @@ class ArgsGenerator():
             mem = 110
 
             # generate args
-            args = """{jf} be.ugent.intec.halvade.Halvade 
+            args = """hadoop jar {jf} be.ugent.intec.halvade.Halvade 
             -libjars $LIBJARS 
             -nodes {nodes}
             -vcores {vc} 
@@ -97,7 +97,7 @@ class ArgsGenerator():
             mem = 110
 
             # generate args
-            args = """{jf} be.ugent.intec.halvade.Halvade 
+            args = """hadoop jar {jf} be.ugent.intec.halvade.Halvade 
             -libjars $LIBJARS 
             -nodes {nodes}
             -vcores {vc} 
