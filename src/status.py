@@ -4,6 +4,9 @@ import urllib2
 import requests
 import config
 from datetime import datetime
+from extractor import PidExtractor
+import subprocess
+import sys
 
 class StatusChecker():
 
@@ -14,14 +17,34 @@ class StatusChecker():
     def check(self):
         signal = self.finishSignal
 
-        if (signal.startswith('hdfs')):
-            status = self.checkHdfsFile(signal)
-        elif (signal.startswith('job_')):
-            status = self.checkHadoopJob(signal)
+        # init extractor
+        pe = PidExtractor()
+
+        if(type(signal) is str):
+            # if is string
+            if (signal.startswith('hdfs')):
+                status = self.checkHdfsFile(signal)
+            elif(signal.startswith('job_')):
+                status = self.checkHadoopJob(signal)
+            else:
+                print >> sys.stderr, "unknown signal type"
+                sys.exit(-1)
+        elif(type(signal) is subprocess.Popen):
+            # if is process handle
+            status = self.checkProcess(signal)
         else:
+            # unknown type
             status = self.checkLocalFile(signal)
 
         return status
+
+    #TODO check return code
+    def checkProcess(self, proc):
+        if (proc.poll() is None):
+            return False
+        else:
+            return True
+
     #TODO
     def checkHdfsFile(self, filePath):
         print "hdfsFile: {0} exists!".format(filePath)
@@ -29,8 +52,10 @@ class StatusChecker():
 
     #TODO
     def checkLocalFile(self, filePath):
-        print "localFile: {0} exists!".format(filePath)
-        return True
+        #print "localFile: {0} exists!".format(filePath)
+        print >> sys.stderr, "check local file signal not implemented"
+        print >> sys.stderr, "signal info: {}".format(filePath)
+        sys.exit(-1)
 
     #TODO
     def checkHadoopJob(self, jobID):

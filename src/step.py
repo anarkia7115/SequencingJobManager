@@ -78,32 +78,28 @@ class Step():
         if self.step == "distribution":
             self.execType = "cl"
             # self.prerequisites is empty
-            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
+            #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
         elif self.step == "alignment":
             self.execType = "ha"
             self.prerequisites.add("distribution")
-            self.finishSignal = "job_alignment"
+            #self.finishSignal = "job_alignment"
         elif self.step == "variation":
             self.execType = "ha"
             self.prerequisites.add("alignment")
-            self.finishSignal = "job_variation"
+            #self.finishSignal = "job_variation"
         elif self.step == "packaging":
             self.execType = "cl"
             self.prerequisites.add("variation")
             self.prerequisites.add("qc")
-            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
+            #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
         elif self.step == "qc":
             self.execType = "cl"
             self.prerequisites.add("distribution")
-            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
+            #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
 
         else:
             print >> sys.stderr, "unknown step name: {0}".format(self.step)
             sys.exit(-1)
-
-        # init status checker
-        from status import StatusChecker
-        self.sc = StatusChecker(self.finishSignal)
 
         return
 
@@ -119,7 +115,11 @@ class Step():
             sys.exit(-1)
 
         self.status = "running"
-        xqtr.run()
+        finishSignal = xqtr.run()
+
+        # init status checker
+        from status import StatusChecker
+        self.sc = StatusChecker(finishSignal)
 
         return
 
