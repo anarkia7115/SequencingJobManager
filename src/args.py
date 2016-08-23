@@ -42,10 +42,9 @@ class ArgsGenerator():
             threadNum = 30
 
             # generate args
-            args = """java -jar {0}
-            -1 {1}
-            -O {2}
-            -t {3}""".format(jarFile, manifestFileName, output, threadNum)
+            args = ['java', '-jar', jarFile, '-1', manifestFileName, 
+                    '-O', output, '-t', threadNum]
+
             return args
 
         elif step == 'alignment':
@@ -63,24 +62,12 @@ class ArgsGenerator():
             mem = 110
 
             # generate args
-            args = """hadoop jar {jf} be.ugent.intec.halvade.Halvade 
-            -libjars $LIBJARS 
-            -nodes {nodes}
-            -vcores {vc} 
-            -RT bcftools
-            -report_all
-            -I {infile}
-            -tmp {tmp}
-            -mem {m}
-            -R {ref}
-            -O {out}            
-            -aln 1
-            -B {b}
-            -D {d}
-            -smt
-            """.format(jf=jarFile, vc=vcores, b=binFile, d=nonUseVcf, m=mem,
-                     out=outputFile, infile=inputFile, ref=ref, nodes=nodes,
-                     tmp=tmpFile)
+            args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
+                    '-libjars', '$LIBJARS', '-nodes', nodes, '-vcores', vcores, 
+                    '-RT', 'bcftools', '-report_all', ',' '-I', inputFile, 
+                    '-tmp', tmpFile, '-mem', mem, '-R', ref, '-O', outputFile, 
+                    '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
+
             return args
             
         elif step == 'variation':
@@ -97,27 +84,19 @@ class ArgsGenerator():
             mem = 110
 
             # generate args
-            args = """hadoop jar {jf} be.ugent.intec.halvade.Halvade 
-            -libjars $LIBJARS 
-            -nodes {nodes}
-            -vcores {vc} 
-            -RT bcftools
-            -report_all
-            -I {infile}
-            -mem {m}
-            -R {ref}
-            -O {out}            
-            -aln 1
-            -B {b}
-            -D {d}
-            -smt
-            """.format(jf=jarFile, vc=vcores, b=binFile, d=nonUseVcf, m=mem,
-                     out=outputFile, infile=inputFile, ref=ref, nodes=nodes)
+            args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
+                    '-libjars', '$LIBJARS', '-nodes', nodes, '-vcores', vcores, 
+                    '-RT', 'bcftools', '-report_all', ',' '-I', inputFile, 
+                    '-mem', mem, '-R', ref, '-O', outputFile, 
+                    '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
+
             return args
 
+        #TODO
         elif step == 'packaging':
             args = "packaging arg string"
             return args
+        #TODO
         elif step == 'qc':
             args = "qc arg string"
             return args
