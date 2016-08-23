@@ -26,7 +26,7 @@ hdfs_config = dict(
     empty_vcf = "hdfs://{0}:9000/tmp/dbsnp_138.hg38.vcf".format(host['hdfs']),
     bin = "hdfs://{0}:9000/user/GCBI/bin.tar.gz".format(host['hdfs']),
     ref = "hdfs://{0}:9000/ref/hg38/hg38".format(host['hdfs']),
-    signal = "hdfs://{0}:9000/signal/{1}_{2}".format(host['hdfs'], "{0}", "{1}")
+    signal = "hdfs://{0}:9000/signal/sequencing_{1}".format(host['hdfs'], "{0}")
 )
 
 local_config = dict(
