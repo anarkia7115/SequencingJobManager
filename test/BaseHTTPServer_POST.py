@@ -4,6 +4,8 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
 import cgi
 import json
+sys.path.insert(0, "../src")
+import config
 
 class PostHandler(BaseHTTPRequestHandler):
     
@@ -32,6 +34,8 @@ def myprint(d, sb=None):
 
 if __name__ == '__main__':
     from BaseHTTPServer import HTTPServer
-    server = HTTPServer(('192.168.2.156', 8081), PostHandler)
+    server = HTTPServer((config.host['request'].partition(':')[0],
+                         config.host['request'].partition(':')[1]), 
+                         PostHandler)
     print 'Starting server, use <Ctrl-C> to stop'
     server.serve_forever()
