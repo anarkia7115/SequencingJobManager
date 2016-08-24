@@ -4,6 +4,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
 import cgi
 import json
+import sys
 sys.path.insert(0, "../src")
 import config
 
