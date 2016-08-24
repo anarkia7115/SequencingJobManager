@@ -47,7 +47,7 @@ class ArgsGenerator():
 
             return [str(i) for i in args ]
 
-        elif step == 'alignment':
+        elif step == 'align':
             # init args
             inputFile = config.hdfs_in['align'].format(self.processID)
             outputFile = config.hdfs_out['align'].format(self.processID)
@@ -93,11 +93,11 @@ class ArgsGenerator():
             return [str(i) for i in args ]
 
         #TODO
-        elif step == 'packaging':
+        elif step == 'pkgResult':
             args = [ "packaging arg string" ]
             return [str(i) for i in args ]
         #TODO
-        elif step == 'qc':
+        elif step == 'qa':
             args = [ "qc arg string" ]
             return [str(i) for i in args ]
         else:

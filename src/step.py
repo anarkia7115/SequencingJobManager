@@ -87,20 +87,20 @@ class Step():
             self.execType = "cl"
             # self.prerequisites is empty
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
-        elif self.step == "alignment":
+        elif self.step == "align":
             self.execType = "ha"
             self.prerequisites.add("distribution")
             #self.finishSignal = "job_alignment"
         elif self.step == "variation":
             self.execType = "ha"
-            self.prerequisites.add("alignment")
+            self.prerequisites.add("align")
             #self.finishSignal = "job_variation"
-        elif self.step == "packaging":
+        elif self.step == "pkgResult":
             self.execType = "cl"
             self.prerequisites.add("variation")
-            self.prerequisites.add("qc")
+            self.prerequisites.add("qa")
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
-        elif self.step == "qc":
+        elif self.step == "qa":
             self.execType = "cl"
             self.prerequisites.add("distribution")
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)

@@ -26,7 +26,7 @@ class JobManager():
         return
 
     def run(self):
-        steps = ['distribution', 'alignment', 'variation', 'packaging', 'qc']
+        steps = ['distribution', 'align', 'variation', 'pkgResult', 'qa']
 
         # start steps
         from step import StepManager
