@@ -4,21 +4,19 @@ import urllib2
 import requests
 import config
 from datetime import datetime
-from extractor import PidExtractor
 import subprocess
 import sys
+import yarn_api_client as yarn
 
 class StatusChecker():
 
     def __init__(self, finishSignal):
         self.finishSignal = finishSignal
+        self.rm = yarn.ResourceManager(config.host['rmhost'])
         return
 
     def check(self):
         signal = self.finishSignal
-
-        # init extractor
-        pe = PidExtractor()
 
         if(type(signal) is str):
             # if is string
@@ -27,8 +25,10 @@ class StatusChecker():
             elif(signal.startswith('job_')):
                 status = self.checkHadoopJob(signal)
             else:
-                print >> sys.stderr, "unknown signal type"
-                sys.exit(-1)
+                print >> sys.stderr, "unknown signal type: {0}".format(signal)
+                self.success = False 
+                return True
+
         elif(type(signal) is subprocess.Popen):
             # if is process handle
             status = self.checkProcess(signal)
@@ -38,11 +38,14 @@ class StatusChecker():
 
         return status
 
-    #TODO check return code
     def checkProcess(self, proc):
         if (proc.poll() is None):
             return False
         else:
+            if (proc.returncode == 0):
+                self.success = True
+            else:
+                self.success = False
             return True
 
     #TODO
@@ -57,9 +60,30 @@ class StatusChecker():
         print >> sys.stderr, "signal info: {}".format(filePath)
         sys.exit(-1)
 
-    #TODO
+    def isFinalSuccess(self):
+        return self.success
+
     def checkHadoopJob(self, jobID):
-        print "{0} finished!".format(jobID)
+
+        # if jobID not parsable, finish check loop and make job fail
+        try:
+            app = self.rm.cluster_application(jobID)
+        except yarn.base.APIError:
+            self.success = False
+            return True
+
+        state = app.data['app']['state']
+        if (state == "FINISHED"):
+            finalStatus = app.data['app']['finalStatus']
+            if (finalStatus == "SUCCEEDED"):
+                self.success = True
+            else:
+                self.success = False
+            return True
+        else:
+            print("waiting for hadoop job: {0} to finish".format(jobID))
+            return False
+        #print "{0} finished!".format(jobID)
         return True
 
 class RequestSender():

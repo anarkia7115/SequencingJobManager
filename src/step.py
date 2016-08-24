@@ -9,6 +9,7 @@ class StepManager():
         self.jobID = jobID
         self.resultPath = ag.getResultPath()
         self.rs = rs
+        self.stepWithError = False
 
         # create Step
         self.steps = []
@@ -22,6 +23,9 @@ class StepManager():
         # loop until steps reduce to 0
         while(len(self.steps) > 0):
 
+            if (self.stepWithError):
+                break
+
             # refresh step status
             for i in range(0, len(self.steps)):
                 s = self.steps[i]
@@ -32,6 +36,10 @@ class StepManager():
                 if s.isFinished():
                     self.steps.pop(i)
                     self.finishedSteps.add(s.getStepName())
+                    if (s.isFinalSuccess()):
+                        pass
+                    else:
+                        self.stepWithError = True
                     time.sleep(1)
                     break
                 # if step meets all prerequisites but not running
@@ -47,7 +55,7 @@ class StepManager():
         # TODO: do something to result path
 
         self.cleanUp()
-        return 
+        return self.stepWithError
 
     def cleanUp(self):
         print "cleaning up Step Manager"
@@ -135,14 +143,25 @@ class Step():
                 self.status = "finished"
         return
 
+    def isFinalSuccess(self):
+        self.sc.isFinalSuccess()
+
+
     def cleanUp(self):
         # 1. send signal
         # 2. send request
 
+        # check finalStatus
+        isSuccess = self.isFinalSuccess() 
+
         # create return json
         returnJson = dict()
         returnJson['step'] = self.step
-        returnJson['result'] = True
+
+        if (isSuccess):
+            returnJson['result'] = True
+        else:
+            returnJson['result'] = False
 
         self.rs.send(returnJson, '/gcbi/ch/inner/cluster/updateAnalyzeStep')
 

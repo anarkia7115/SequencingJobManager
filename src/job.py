@@ -32,7 +32,7 @@ class JobManager():
         from step import StepManager
 
         sm = StepManager(self.processID, steps, self.ag, self.rs)
-        sm.wait()
+        self.withError = sm.wait()
         self.cleanUp()
 
     """ 
@@ -47,7 +47,11 @@ class JobManager():
         # create request signal
         returnJson = dict()
         returnJson['clusterId'] = self.clusterID
-        returnJson['result'] = True
+
+        if(self.withError):
+            returnJson['result'] = False
+        else:
+            returnJson['result'] = True
 
         # send request signal
         self.rs.send(returnJson, "/gcbi/ch/inner/cluster/clusterEnd")
