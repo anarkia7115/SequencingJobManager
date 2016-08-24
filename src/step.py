@@ -125,6 +125,10 @@ class Step():
         self.status = "running"
         finishSignal = xqtr.run()
 
+        # send start signal
+        self.rs.setStart()
+        self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
+
         # init status checker
         from status import StatusChecker
         self.sc = StatusChecker(finishSignal)
@@ -163,6 +167,7 @@ class Step():
         else:
             returnJson['result'] = False
 
+        self.rs.setEnd()
         self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
         # send request

@@ -91,14 +91,26 @@ class RequestSender():
 
         self.accession = accession
         self.processID = processID
+        self.isEnd = False
         return
     
     def send(self, returnJson, path):
         returnJson['processId'] = self.processID
         returnJson['accession'] = self.accession
-        returnJson['timeType'] = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
+        if(self.isEnd):
+            returnJson['timeType'] = 'endTime'
+        else:
+            returnJson['timeType'] = 'startTime'
 
         self.post(returnJson, path)
+        return
+
+    def setEnd(self):
+        self.isEnd = True
+        return
+
+    def setStart(self):
+        self.isEnd = False
         return
 
     def post(self, dictJson, path):
