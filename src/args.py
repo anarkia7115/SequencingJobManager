@@ -45,7 +45,7 @@ class ArgsGenerator():
             args = ['java', '-jar', jarFile, '-1', manifestFileName, 
                     '-O', output, '-t', threadNum]
 
-            return args
+            return [str(i) for i in args ]
 
         elif step == 'alignment':
             # init args
@@ -68,7 +68,7 @@ class ArgsGenerator():
                     '-tmp', tmpFile, '-mem', mem, '-R', ref, '-O', outputFile, 
                     '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
 
-            return args
+            return [str(i) for i in args ]
             
         elif step == 'variation':
             # init args
@@ -90,16 +90,16 @@ class ArgsGenerator():
                     '-mem', mem, '-R', ref, '-O', outputFile, 
                     '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
 
-            return args
+            return [str(i) for i in args ]
 
         #TODO
         elif step == 'packaging':
-            args = "packaging arg string"
-            return args
+            args = [ "packaging arg string" ]
+            return [str(i) for i in args ]
         #TODO
         elif step == 'qc':
-            args = "qc arg string"
-            return args
+            args = [ "qc arg string" ]
+            return [str(i) for i in args ]
         else:
             print >> sys.stderr, "[Error] unknown step: {0}".format(step)
             sys.exit(-1)
