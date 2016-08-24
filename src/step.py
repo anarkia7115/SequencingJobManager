@@ -131,8 +131,8 @@ class Step():
         returnJson['step'] = self.step
 
         returnJson['result'] = False
+        returnJson['timeType'] = 'startTime'
 
-        self.rs.setStart()
         self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
         # init status checker
@@ -173,7 +173,7 @@ class Step():
         else:
             returnJson['result'] = False
 
-        self.rs.setEnd()
+        returnJson['timeType'] = 'endTime'
         self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
         # send request
