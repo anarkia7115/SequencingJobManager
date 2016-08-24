@@ -126,6 +126,12 @@ class Step():
         finishSignal = xqtr.run()
 
         # send start signal
+        # create return json
+        returnJson = dict()
+        returnJson['step'] = self.step
+
+        returnJson['result'] = False
+
         self.rs.setStart()
         self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
