@@ -54,7 +54,7 @@ class JobManager():
             returnJson['result'] = True
 
         # send request signal
-        self.rs.send(returnJson, "/gcbi/ch/inner/cluster/clusterEnd")
+        self.rs.send(returnJson, "/nosec/cluster/clusterEnd")
 
         return
 

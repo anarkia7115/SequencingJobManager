@@ -65,7 +65,7 @@ class StepManager():
         returnJson['resultPath'] = self.resultPath
 
         # send request signal
-        self.rs.send(returnJson, '/gcbi/ch/inner/cluster/sampleAnalyzeResult')
+        self.rs.send(returnJson, '/nosec/cluster/sampleAnalyzeResult')
 
         return
 
@@ -163,7 +163,7 @@ class Step():
         else:
             returnJson['result'] = False
 
-        self.rs.send(returnJson, '/gcbi/ch/inner/cluster/updateAnalyzeStep')
+        self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
         # send request
 
