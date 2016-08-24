@@ -36,7 +36,7 @@ def myprint(d, sb=None):
 if __name__ == '__main__':
     from BaseHTTPServer import HTTPServer
     server = HTTPServer((config.host['request'].partition(':')[0],
-                         config.host['request'].partition(':')[1]), 
+                         int(config.host['request'].partition(':')[1])), 
                          PostHandler)
     print 'Starting server, use <Ctrl-C> to stop'
     server.serve_forever()
