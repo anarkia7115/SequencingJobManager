@@ -47,6 +47,7 @@ class StatusChecker():
             if (proc.returncode == 0):
                 self.success = True
             else:
+                print >> sys.stderr, "[ERROR] process return non-zero code: {0}".format(proc.returncode)
                 self.success = False
             return True
 
@@ -80,6 +81,7 @@ class StatusChecker():
             if (finalStatus == "SUCCEEDED"):
                 self.success = True
             else:
+                print >> sys.stderr, "[ERROR] hadoop finished non-successful status: {0}".format(finalStatus)
                 self.success = False
             return True
         else:
