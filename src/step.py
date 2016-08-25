@@ -154,7 +154,7 @@ class Step():
         return
 
     def isFinalSuccess(self):
-        self.sc.isFinalSuccess()
+        return self.sc.isFinalSuccess()
 
 
     def cleanUp(self):
