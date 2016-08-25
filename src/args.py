@@ -65,7 +65,7 @@ class ArgsGenerator():
             # generate args
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
                     '-libjars', os.environ['LIBJARS'], '-nodes', nodes, '-vcores', vcores, 
-                    '-RT', 'bcftools', '-report_all', ',' '-I', inputFile, 
+                    '-RT', 'bcftools', '-report_all', '-I', inputFile, 
                     '-tmp', tmpFile, '-mem', mem, '-R', ref, '-O', outputFile, 
                     '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
 
@@ -87,7 +87,7 @@ class ArgsGenerator():
             # generate args
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
                     '-libjars', os.environ['LIBJARS'], '-nodes', nodes, '-vcores', vcores, 
-                    '-RT', 'bcftools', '-report_all', ',' '-I', inputFile, 
+                    '-RT', 'bcftools', '-report_all', '-I', inputFile, 
                     '-mem', mem, '-R', ref, '-O', outputFile, 
                     '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
 
