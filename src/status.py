@@ -40,6 +40,8 @@ class StatusChecker():
 
     def checkProcess(self, proc):
         if (proc.poll() is None):
+            stdout = proc.stdout.read()
+            print("[stdout] {0}".format(stdout))
             return False
         else:
             if (proc.returncode == 0):
