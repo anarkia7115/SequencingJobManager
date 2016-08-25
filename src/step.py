@@ -169,8 +169,10 @@ class Step():
         returnJson['step'] = self.step
 
         if (isSuccess):
+            print >> sys.stderr, "---returnJson[result] set to true---"
             returnJson['result'] = True
         else:
+            print >> sys.stderr, "---returnJson[result] set to false---"
             returnJson['result'] = False
 
         returnJson['timeType'] = 'endTime'

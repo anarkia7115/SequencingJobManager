@@ -45,6 +45,7 @@ class StatusChecker():
             return False
         else:
             if (proc.returncode == 0):
+                print >> sys.stderr, "---self.success set to true---"
                 self.success = True
             else:
                 print >> sys.stderr, "[ERROR] process return non-zero code: {0}".format(proc.returncode)
