@@ -106,6 +106,7 @@ class PostHandler(BaseHTTPRequestHandler):
         # run background
         p = Process(target=jm.run, args=())
         p.start()
+        print "end of start process"
         return 
 
 def main():
