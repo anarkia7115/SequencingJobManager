@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
+import os
 import sys
 import config
 
@@ -63,7 +64,7 @@ class ArgsGenerator():
 
             # generate args
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
-                    '-libjars', '$LIBJARS', '-nodes', nodes, '-vcores', vcores, 
+                    '-libjars', os.environ['LIBJARS'], '-nodes', nodes, '-vcores', vcores, 
                     '-RT', 'bcftools', '-report_all', ',' '-I', inputFile, 
                     '-tmp', tmpFile, '-mem', mem, '-R', ref, '-O', outputFile, 
                     '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
@@ -85,7 +86,7 @@ class ArgsGenerator():
 
             # generate args
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
-                    '-libjars', '$LIBJARS', '-nodes', nodes, '-vcores', vcores, 
+                    '-libjars', os.environ['LIBJARS'], '-nodes', nodes, '-vcores', vcores, 
                     '-RT', 'bcftools', '-report_all', ',' '-I', inputFile, 
                     '-mem', mem, '-R', ref, '-O', outputFile, 
                     '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
