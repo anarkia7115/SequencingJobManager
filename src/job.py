@@ -26,12 +26,15 @@ class JobManager():
         return
 
     def run(self):
-        steps = ['distribution', 'align', 'variation', 'pkgResult', 'qa']
+        #steps = ['distribution', 'align', 'variation', 'pkgResult', 'qa']
+        steps = ['align', 'variation', 'pkgResult', 'qa']
+        finishedSteps = ['distribution']
 
         # start steps
         from step import StepManager
 
         sm = StepManager(self.processID, steps, self.ag, self.rs)
+        sm.addFinishedSteps(finishedSteps)
         self.withError = sm.wait()
         self.cleanUp()
 

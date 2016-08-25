@@ -19,6 +19,10 @@ class StepManager():
         self.finishedSteps = set()
         return
 
+    def addFinishedSteps(self, fs):
+        # union 2 finished steps
+        self.finishedSteps |= set(fs)
+
     def wait(self):
         # loop until steps reduce to 0
         while(len(self.steps) > 0):
