@@ -99,11 +99,17 @@ class ArgsGenerator():
 
         #TODO
         elif step == 'pkgResult':
-            args = [ "packaging arg string" ]
+            args = [ config.bin['pkgResult'], 
+                     config.hdfs_in['pkgResult'] ]
             return [str(i) for i in args ]
+
         #TODO
         elif step == 'qa':
-            args = [ "qc arg string" ]
+            args = [ config.bin['qa'], 
+                     config.local_config['local_fastq'].fomat(self.processID),
+                     config.local_config['local_qa'].fomat(self.processID),
+                     self.processID]
+
             return [str(i) for i in args ]
         else:
             print >> sys.stderr, "[Error] unknown step: {0}".format(step)

@@ -85,6 +85,8 @@ class Step():
         self.rs = rs
 
         self.prerequisites = set()
+        si = StepInit()
+        sc = StepClean()
 
         # init step specified infos
         if self.step == "distribution":
@@ -106,6 +108,14 @@ class Step():
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
         elif self.step == "qa":
             self.execType = "cl"
+            self.stepInit = si.qaInit
+            self.stepClean = sc.qaClean
+            self.stepInitArgs = [
+                 config.hdfs_in['qa'], 
+                 config.local_config['local_fastq'].fomat(self.jobID) ]
+            self.stepCleanArgs = [
+                 config.local_config['local_qa'].fomat(self.processID),
+                 config.hdfs_out['qa'].fomat(self.processID) ]
             self.prerequisites.add("distribution")
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
 
@@ -116,6 +126,11 @@ class Step():
         return
 
     def start(self, args):
+        # run init function
+        if (self.stepInit is not None):
+            self.stepInit(self.stepInitArgs)
+
+        # run xqtr
         from executor import CommandLineExecutor, HadoopAppExecutor
 
         if self.execType == 'cl':
@@ -160,7 +175,6 @@ class Step():
     def isFinalSuccess(self):
         return self.sc.isFinalSuccess()
 
-
     def cleanUp(self):
         # 1. send signal
         # 2. send request
@@ -173,10 +187,8 @@ class Step():
         returnJson['step'] = self.step
 
         if (isSuccess):
-            print >> sys.stderr, "---returnJson[result] set to true---"
             returnJson['result'] = True
         else:
-            print >> sys.stderr, "---returnJson[result] set to false---"
             returnJson['result'] = False
 
         returnJson['timeType'] = 'endTime'
@@ -218,3 +230,30 @@ class Step():
     def getStatus(self):
         return self.status
 
+class StepInit():
+
+    def qaInit(self, args):
+
+        hdfsFastq = args[0]
+        localFastq = args[1]
+
+        # download from hdfs to local
+        import hdfs
+
+        client = hdfs.InsecureClient(
+            url="http://{}:50070".format(hdfs.partition(':')[0]))
+        client.download(hdfs_path=hdfsFastq, local_path=localFastq)
+
+class StepClean():
+
+    def qaClean(self, args):
+
+        localQa = args[0]
+        hdfsQa = args[1]
+
+        import hdfs
+
+        client = hdfs.InsecureClient(
+            url="http://{}:50070".format(hdfs.partition(':')[0]))
+
+        client.upload(local_path=localQa, hdfs_path=hdfsQa)
