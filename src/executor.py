@@ -26,7 +26,7 @@ class HadoopAppExecutor():
 
     def run(self):
         # init process runner
-        proc = subprocess.Popen(self.args, stderr = subprocess.PIPE)
+        proc = subprocess.Popen(self.args, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 
         # init extractor
         he = HadoopExtractor()
@@ -37,8 +37,11 @@ class HadoopAppExecutor():
             errLines = []
             while proc.poll() is None:
                 errLine = proc.stderr.readline()
+                outLine = proc.stdout.readline()
                 errLines.append(errLine)
+                print(outLine)
                 errLine = errLine.strip()
+                outLine = outLine.strip()
                 if (he.parseJobID(errLine)):
 
                     return he.getJobID()
