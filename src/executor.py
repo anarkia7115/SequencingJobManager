@@ -39,7 +39,7 @@ class HadoopAppExecutor():
                 errLine = proc.stderr.readline()
                 outLine = proc.stdout.readline()
                 errLines.append(errLine)
-                print(outLine)
+                sys.stdout.write(outLine)
                 errLine = errLine.strip()
                 outLine = outLine.strip()
                 if (he.parseJobID(errLine)):
