@@ -64,10 +64,12 @@ class ArgsGenerator():
 
             # generate args
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
-                    '-libjars', os.environ['LIBJARS'], '-nodes', nodes, '-vcores', vcores, 
-                    '-RT', 'bcftools', '-report_all', '-I', inputFile, 
-                    '-tmp', tmpFile, '-mem', mem, '-R', ref, '-O', outputFile, 
-                    '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
+                    '-libjars', os.environ['LIBJARS'], 
+                    '-I', inputFile, '-R', ref, '-O', outputFile, 
+                    '-B', binFile, '-D', nonUseVcf,
+                    '-RT', 'bcftools', '-mem', mem, '-report_all', 
+                    '-nodes', nodes, '-vcores', vcores,
+                    '-tmp', tmpFile, '-aln', '1', '-smt']
 
             return [str(i) for i in args ]
             
@@ -86,10 +88,12 @@ class ArgsGenerator():
 
             # generate args
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
-                    '-libjars', os.environ['LIBJARS'], '-nodes', nodes, '-vcores', vcores, 
-                    '-RT', 'bcftools', '-report_all', '-I', inputFile, 
-                    '-mem', mem, '-R', ref, '-O', outputFile, 
-                    '-aln', '1', '-B', binFile, '-D', nonUseVcf, '-smt']
+                    '-libjars', os.environ['LIBJARS'], 
+                    '-I', inputFile, '-R', ref, '-O', outputFile, 
+                    '-B', binFile, '-D', nonUseVcf,
+                    '-RT', 'bcftools', '-mem', mem, '-report_all', 
+                    '-nodes', nodes, '-vcores', vcores,
+                    '-aln', '1', '-smt']
 
             return [str(i) for i in args ]
 
