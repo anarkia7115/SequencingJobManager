@@ -38,7 +38,7 @@ class HadoopAppExecutor():
             while proc.poll() is None:
                 errLine = proc.stderr.readline()
                 errLines.append(errLine)
-                errLine.strip()
+                errLine = errLine.strip()
                 if (he.parseJobID(errLine)):
 
                     return he.getJobID()
