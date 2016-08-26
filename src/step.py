@@ -82,7 +82,7 @@ class Step():
         self.step = stepName
         self.jobID = jobID
         self.args = argsGen.generateArgs(self.step)
-        print (self.args)
+        print("self.args: {0}".format(self.args))
         self.rs = rs
 
         self.prerequisites = set()
@@ -130,10 +130,11 @@ class Step():
 
     def start(self, args):
         # run init function
-        try:
-            self.stepInit(self.stepInitArgs)
-        except AttributeError:
-            print "skip init for {0}".format(self.step)
+        self.stepInit(self.stepInitArgs)
+        #try:
+        #    self.stepInit(self.stepInitArgs)
+        #except AttributeError:
+        #    print "skip init for {0}".format(self.step)
 
         # run xqtr
         from executor import CommandLineExecutor, HadoopAppExecutor
