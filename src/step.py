@@ -284,7 +284,7 @@ class StepInit():
         print("download finished")
 
         # decompressing
-        decCmd = ['gunzip', os.path.join(localFastq, '*')]
+        decCmd = ['gunzip', '-r', localFastq]
 
         print("decompressing...")
         decRc = subprocess.call(decCmd)
