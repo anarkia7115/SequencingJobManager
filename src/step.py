@@ -146,7 +146,6 @@ class Step():
                 return
 
         except AttributeError:
-            print e.strerror
             print "skip init for AttributeError"
 
         # run xqtr
