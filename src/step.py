@@ -300,8 +300,7 @@ class StepInit():
     def pkgResultInit(self, args):
 
         cmds1 = ['hdfs', 'mkdir', '-p', config.hdfs_in['pkgResult']]
-        cmds2 = ['hdfs', 'cp', '-r', 
-                config.hdfs_out['upload'], config.hdfs_out['align'],
+        cmds2 = ['hdfs', 'cp', '-r', config.hdfs_out['align'],
                 config.hdfs_out['snv'], config.hdfs_out['qa'],
                 config.hdfs_in['pkgResult']]
 
