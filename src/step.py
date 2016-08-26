@@ -268,10 +268,19 @@ class StepInit():
                 url="http://{0}:50070".format(config.host['hdfshost']))
             client.download(hdfs_path=hdfsFastq, local_path=localFastq)
         except hdfs.HdfsError:
-            print >> sys.stderr, "qc init failed"
+            print >> sys.stderr, "qc init failed during hdfs downloading"
             return False
-        else:
-            return True
+
+        # decompressing
+        decCmd = ['gunzip', os.path.join(localFastq, '*')]
+
+        decRc = subprocess.call(decCmd)
+
+        if not (decRc == 0):
+            print >> sys.stderr, "qc init failed during decompressing"
+            return False
+
+        return True
 
     def pkgResultInit(self, args):
 
