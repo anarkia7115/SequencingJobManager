@@ -82,6 +82,7 @@ class Step():
         self.step = stepName
         self.jobID = jobID
         self.args = argsGen.generateArgs(self.step)
+        print (self.args)
         self.rs = rs
 
         self.prerequisites = set()
