@@ -1,5 +1,6 @@
 import os
 host = dict(
+    hdfshost = "node19",
     hdfs = "node19:9000",
     rmhost = "node19",
     request = "mgmt:8081",

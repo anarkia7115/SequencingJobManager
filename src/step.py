@@ -252,7 +252,7 @@ class StepInit():
         import hdfs
 
         client = hdfs.InsecureClient(
-            url="http://{}:50070".format(config.host['hdfs'].partition(':')[0]))
+            url="http://{0}:50070".format(config.host['hdfshost']))
         client.download(hdfs_path=hdfsFastq, local_path=localFastq)
 
     def pkgResultInit(self, args):
@@ -276,7 +276,7 @@ class StepClean():
         import hdfs
 
         client = hdfs.InsecureClient(
-            url="http://{0}:50070".format(hdfs.partition(':')[0]))
+            url="http://{0}:50070".format(config.host['hdfshost']))
 
         client.upload(local_path=localQa, hdfs_path=hdfsQa)
 
