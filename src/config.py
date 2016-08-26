@@ -14,18 +14,26 @@ jar = dict(
     snv = "/online/home/GCBI/jars/snv_job-wxz-1.2.jar"
 )
 
+hdfs_base = dict(
+    upload = "/user/GCBI/sequencing/fastq_{0}",
+    align = "/user/GCBI/sequencing/align_{0}",
+    snv = "/user/GCBI/sequencing/snv_{0}",
+    qa = "/user/GCBI/sequencing/qa_{0}",
+    pkgResult = "/user/GCBI/sequencing/pkg_{0}"
+)
+
 hdfs_out = dict(
-    upload = "hdfs://{0}/user/GCBI/sequencing/fastq_{1}".format(host['hdfs'], "{0}"),
-    align = "hdfs://{0}/user/GCBI/sequencing/align_{1}".format(host['hdfs'], "{0}"),
-    snv = "hdfs://{0}/user/GCBI/sequencing/snv_{1}".format(host['hdfs'], "{0}"),
-    qa = "hdfs://{0}/user/GCBI/sequencing/qa_{1}".format(host['hdfs'], "{0}")
+    upload = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['upload']),
+    align = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['align']),
+    snv = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['snv']),
+    qa = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['qa'])
 )
 
 hdfs_in = dict(
     align = hdfs_out['upload'],
     snv = os.path.join(hdfs_out['align'], "bamfiles"),
     qa = hdfs_out['upload'],
-    pkgResult = "hdfs://{0}/user/GCBI/sequencing/pkg_{1}"
+    pkgResult = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['pkgResult'])
 )
 
 hdfs_config = dict(

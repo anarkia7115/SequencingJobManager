@@ -114,11 +114,11 @@ class Step():
             self.stepInit = si.qaInit
             self.stepClean = sc.qaClean
             self.stepInitArgs = [
-                 config.hdfs_in['qa'], 
+                 config.hdfs_base['upload'].format(self.jobID), 
                  config.local_config['local_fastq'].format(self.jobID) ]
             self.stepCleanArgs = [
                  config.local_config['local_qa'].format(self.jobID),
-                 config.hdfs_out['qa'].format(self.jobID) ]
+                 config.hdfs_base['qa'].format(self.jobID) ]
             self.prerequisites.add("distribution")
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
 
@@ -251,6 +251,7 @@ class StepInit():
         # download from hdfs to local
         import hdfs
 
+        print("{0} to {1} in qc init...".format(hdfsFastq, localFastq))
         client = hdfs.InsecureClient(
             url="http://{0}:50070".format(config.host['hdfshost']))
         client.download(hdfs_path=hdfsFastq, local_path=localFastq)
