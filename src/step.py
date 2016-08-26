@@ -2,6 +2,7 @@
 import time
 import sys
 import os
+import subprocess
 import config
 
 class StepManager():
@@ -272,14 +273,19 @@ class StepInit():
             print >> sys.stderr, "qc init failed during hdfs downloading"
             return False
 
+        print("download finished")
+
         # decompressing
         decCmd = ['gunzip', os.path.join(localFastq, '*')]
 
+        print("decompressing...")
         decRc = subprocess.call(decCmd)
 
         if not (decRc == 0):
             print >> sys.stderr, "qc init failed during decompressing"
             return False
+
+        print("decompress finished")
 
         return True
 
