@@ -133,11 +133,15 @@ class Step():
     def start(self, args):
         # run init function
         #self.stepInit(self.stepInitArgs)
+        from status import StatusChecker
+        from executor import CommandLineExecutor, HadoopAppExecutor
+
         try:
             inited = self.stepInit(self.stepInitArgs)
             if(not inited): 
                 print >> sys.stderr, "{0} init failed".format(self.step)
                 self.status = "finished"
+                self.sc = StatusChecker("error init")
                 return
 
         except AttributeError as e:
@@ -145,7 +149,6 @@ class Step():
             print "skip init for {0}".format(self.step)
 
         # run xqtr
-        from executor import CommandLineExecutor, HadoopAppExecutor
 
         if self.execType == 'cl':
             xqtr = CommandLineExecutor(args)
@@ -169,7 +172,6 @@ class Step():
         self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
         # init status checker
-        from status import StatusChecker
         self.sc = StatusChecker(finishSignal)
 
         return
