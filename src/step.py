@@ -129,8 +129,10 @@ class Step():
 
     def start(self, args):
         # run init function
-        if (self.stepInit is not None):
+        try:
             self.stepInit(self.stepInitArgs)
+        except AttributeError:
+            print "skip init for {0}".format(self.step)
 
         # run xqtr
         from executor import CommandLineExecutor, HadoopAppExecutor
@@ -181,8 +183,10 @@ class Step():
         # 1. send signal
         # 2. send request
 
-        if (self.stepClean is not None):
+        try:
             self.stepClean(self.stepCleanArgs)
+        except AttributeError:
+            print "skip clean for {0}".format(self.step)
 
         # check finalStatus
         isSuccess = self.isFinalSuccess() 
