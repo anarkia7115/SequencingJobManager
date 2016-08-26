@@ -276,7 +276,7 @@ class StepClean():
         import hdfs
 
         client = hdfs.InsecureClient(
-            url="http://{}:50070".format(hdfs.partition(':')[0]))
+            url="http://{0}:50070".format(hdfs.partition(':')[0]))
 
         client.upload(local_path=localQa, hdfs_path=hdfsQa)
 
