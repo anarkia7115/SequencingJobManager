@@ -16,14 +16,14 @@ jar = dict(
 hdfs_out = dict(
     upload = "hdfs://{0}/user/GCBI/sequencing/fastq_{1}".format(host['hdfs'], "{0}"),
     align = "hdfs://{0}/user/GCBI/sequencing/align_{1}".format(host['hdfs'], "{0}"),
-    snv = "hdfs://{0}/user/GCBI/sequencing/snv_{1}".format(host['hdfs'], "{0}")
+    snv = "hdfs://{0}/user/GCBI/sequencing/snv_{1}".format(host['hdfs'], "{0}"),
     qa = "hdfs://{0}/user/GCBI/sequencing/qa_{1}".format(host['hdfs'], "{0}")
 )
 
 hdfs_in = dict(
-    align = hdfs_out['upload']
-    snv = os.path.join(hdfs_out['align'], "bamfiles")
-    qa = hdfs_out['upload']
+    align = hdfs_out['upload'],
+    snv = os.path.join(hdfs_out['align'], "bamfiles"),
+    qa = hdfs_out['upload'],
     pkgResult = "hdfs://{0}/user/GCBI/sequencing/pkg_{1}"
 )
 
@@ -37,7 +37,7 @@ hdfs_config = dict(
 local_config = dict(
     tmp_folder = "/tmp/halvade",
     tmp_manifest = "/tmp/sample_{0}.manifest", 
-    local_fastq = "/online/GCBI/fastq/{0}"
+    local_fastq = "/online/GCBI/fastq/{0}", 
     local_qa = "/online/GCBI/qa/{0}"
 )
 

@@ -106,8 +106,8 @@ class ArgsGenerator():
         #TODO
         elif step == 'qa':
             args = [ config.bin['qa'], 
-                     config.local_config['local_fastq'].fomat(self.processID),
-                     config.local_config['local_qa'].fomat(self.processID),
+                     config.local_config['local_fastq'].format(self.processID),
+                     config.local_config['local_qa'].format(self.processID),
                      self.processID]
 
             return [str(i) for i in args ]
