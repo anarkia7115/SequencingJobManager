@@ -1,10 +1,10 @@
 import os
 host = dict(
-    hdfs = "localhost:9000",
-    rmhost = "localhost",
-    request = "192.168.2.156:8081",
-    local_server_host = "192.168.2.156",
-    local_server_port = 8080
+    hdfs = "node19:9000",
+    rmhost = "node19",
+    request = "mgmt:8081",
+    local_server_host = "node19",
+    local_server_port = 8321
 )
 
 jar = dict(
@@ -28,10 +28,10 @@ hdfs_in = dict(
 )
 
 hdfs_config = dict(
-    empty_vcf = "hdfs://{0}:9000/tmp/dbsnp_138.hg38.vcf".format(host['hdfs']),
-    bin = "hdfs://{0}:9000/user/GCBI/bin.tar.gz".format(host['hdfs']),
-    ref = "hdfs://{0}:9000/ref/hg38/hg38".format(host['hdfs']),
-    signal = "hdfs://{0}:9000/signal/sequencing_{1}".format(host['hdfs'], "{0}")
+    empty_vcf = "hdfs://{0}/tmp/dbsnp_138.hg38.vcf".format(host['hdfs']),
+    bin = "hdfs://{0}/user/GCBI/bin.tar.gz".format(host['hdfs']),
+    ref = "hdfs://{0}/ref/hg38/hg38".format(host['hdfs']),
+    signal = "hdfs://{0}/signal/sequencing_{1}".format(host['hdfs'], "{0}")
 )
 
 local_config = dict(
