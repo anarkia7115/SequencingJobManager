@@ -61,7 +61,7 @@ class StatusChecker():
     def checkLocalFile(self, filePath):
         #print "localFile: {0} exists!".format(filePath)
         print >> sys.stderr, "check local file signal not implemented"
-        print >> sys.stderr, "signal info: {}".format(filePath)
+        print >> sys.stderr, "signal info: {0}".format(filePath)
         sys.exit(-1)
 
     def isFinalSuccess(self):
