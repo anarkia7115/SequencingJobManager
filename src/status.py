@@ -13,6 +13,7 @@ class StatusChecker():
     def __init__(self, finishSignal):
         self.finishSignal = finishSignal
         self.rm = yarn.ResourceManager(config.host['rmhost'])
+        self.success = False
         return
 
     def check(self):

@@ -132,7 +132,12 @@ class Step():
         # run init function
         #self.stepInit(self.stepInitArgs)
         try:
-            self.stepInit(self.stepInitArgs)
+            inited = self.stepInit(self.stepInitArgs)
+            if(not inited): 
+                print >> sys.stderr, "{0} init failed".format(self.step)
+                self.status = "finished"
+                return
+
         except AttributeError as e:
             print e.strerror
             print "skip init for {0}".format(self.step)
@@ -190,7 +195,8 @@ class Step():
             cleaned = self.stepClean(self.stepCleanArgs)
             if(not cleaned):
                 print >> sys.stderr, "{0} clean failed".format(self.step)
-                sys.exit(-1)
+                self.status = "finished"
+                return
 
         except AttributeError:
             print "skip clean for {0}".format(self.step)
@@ -264,8 +270,8 @@ class StepInit():
         except hdfs.HdfsError:
             print >> sys.stderr, "qc init failed"
             return False
-
-        return True
+        else:
+            return True
 
     def pkgResultInit(self, args):
 
@@ -301,6 +307,6 @@ class StepClean():
         except hdfs.HdfsError:
             print >> sys.stderr, "qc clean failed"
             return False
-
-        return True
+        else:
+            return True
 
