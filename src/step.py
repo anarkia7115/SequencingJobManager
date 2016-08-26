@@ -50,8 +50,8 @@ class StepManager():
                     break
                 # if step meets all prerequisites but not running
                 elif s.isReady():
-                    s.start(s.getArgs())
                     print "{0} is started".format(s.getStepName())
+                    s.start(s.getArgs())
                     time.sleep(1)
                     break
             # self end 
@@ -282,6 +282,7 @@ class StepInit():
 
         print("decompressing...")
         decRc = subprocess.call(decCmd)
+        subprocess.call(['ls', '/online/GCBI/fastq/4/'])
 
         if not (decRc == 0):
             print >> sys.stderr, "qc init failed during decompressing"
