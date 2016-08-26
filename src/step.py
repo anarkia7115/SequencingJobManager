@@ -116,8 +116,8 @@ class Step():
                  config.hdfs_in['qa'], 
                  config.local_config['local_fastq'].format(self.jobID) ]
             self.stepCleanArgs = [
-                 config.local_config['local_qa'].format(self.processID),
-                 config.hdfs_out['qa'].format(self.processID) ]
+                 config.local_config['local_qa'].format(self.jobID),
+                 config.hdfs_out['qa'].format(self.jobID) ]
             self.prerequisites.add("distribution")
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
 
