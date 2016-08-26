@@ -130,11 +130,12 @@ class Step():
 
     def start(self, args):
         # run init function
-        self.stepInit(self.stepInitArgs)
-        #try:
-        #    self.stepInit(self.stepInitArgs)
-        #except AttributeError:
-        #    print "skip init for {0}".format(self.step)
+        #self.stepInit(self.stepInitArgs)
+        try:
+            self.stepInit(self.stepInitArgs)
+        except AttributeError as e:
+            print e.strerror
+            print "skip init for {0}".format(self.step)
 
         # run xqtr
         from executor import CommandLineExecutor, HadoopAppExecutor
@@ -186,7 +187,11 @@ class Step():
         # 2. send request
 
         try:
-            self.stepClean(self.stepCleanArgs)
+            cleaned = self.stepClean(self.stepCleanArgs)
+            if(not cleaned):
+                print >> sys.stderr, "{0} clean failed".format(self.step)
+                sys.exit(-1)
+
         except AttributeError:
             print "skip clean for {0}".format(self.step)
 
@@ -252,9 +257,15 @@ class StepInit():
         import hdfs
 
         print("{0} to {1} in qc init...".format(hdfsFastq, localFastq))
-        client = hdfs.InsecureClient(
-            url="http://{0}:50070".format(config.host['hdfshost']))
-        client.download(hdfs_path=hdfsFastq, local_path=localFastq)
+        try:
+            client = hdfs.InsecureClient(
+                url="http://{0}:50070".format(config.host['hdfshost']))
+            client.download(hdfs_path=hdfsFastq, local_path=localFastq)
+        except hdfs.HdfsError:
+            print >> sys.stderr, "qc init failed"
+            return False
+
+        return True
 
     def pkgResultInit(self, args):
 
@@ -267,6 +278,12 @@ class StepInit():
         rc1 = subprocess.call(cmds1)
         rc2 = subprocess.call(cmds2)
 
+        if not (rc1 == 0 && rc2 == 0):
+            print >> sys.stderr, "pkg init failed"
+            return False
+        else:
+            return True
+
 class StepClean():
 
     def qaClean(self, args):
@@ -276,8 +293,14 @@ class StepClean():
 
         import hdfs
 
-        client = hdfs.InsecureClient(
-            url="http://{0}:50070".format(config.host['hdfshost']))
+        try:
+            client = hdfs.InsecureClient(
+                url="http://{0}:50070".format(config.host['hdfshost']))
 
-        client.upload(local_path=localQa, hdfs_path=hdfsQa)
+            client.upload(local_path=localQa, hdfs_path=hdfsQa)
+        except hdfs.HdfsError:
+            print >> sys.stderr, "qc clean failed"
+            return False
+
+        return True
 
