@@ -282,7 +282,6 @@ class StepInit():
 
         print("decompressing...")
         decRc = subprocess.call(decCmd)
-        subprocess.call(['ls', '/online/GCBI/fastq/4/'])
 
         if not (decRc == 0):
             print >> sys.stderr, "qc init failed during decompressing"
