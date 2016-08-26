@@ -263,6 +263,11 @@ class StepInit():
         hdfsFastq = args[0]
         localFastq = args[1]
 
+        # check folder exists
+        if (os.path.exists(localFastq)):
+            shutil.rmtree(localFastq)
+            print("{0} is removed".format(localFastq))
+
         # download from hdfs to local
         import hdfs
 
