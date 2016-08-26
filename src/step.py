@@ -114,10 +114,10 @@ class Step():
             self.stepClean = sc.qaClean
             self.stepInitArgs = [
                  config.hdfs_in['qa'], 
-                 config.local_config['local_fastq'].fomat(self.jobID) ]
+                 config.local_config['local_fastq'].format(self.jobID) ]
             self.stepCleanArgs = [
-                 config.local_config['local_qa'].fomat(self.processID),
-                 config.hdfs_out['qa'].fomat(self.processID) ]
+                 config.local_config['local_qa'].format(self.processID),
+                 config.hdfs_out['qa'].format(self.processID) ]
             self.prerequisites.add("distribution")
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
 
