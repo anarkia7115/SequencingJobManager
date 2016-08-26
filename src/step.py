@@ -145,9 +145,9 @@ class Step():
                 self.sc = StatusChecker("error init")
                 return
 
-        except AttributeError as e:
+        except AttributeError:
             print e.strerror
-            print "skip init for {0}".format(self.step)
+            print "skip init for AttributeError"
 
         # run xqtr
 
