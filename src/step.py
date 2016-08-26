@@ -105,6 +105,8 @@ class Step():
             self.execType = "cl"
             self.prerequisites.add("variation")
             self.prerequisites.add("qa")
+            self.stepInit = si.pkgResultInit
+            self.stepInitArgs = []
             #self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
         elif self.step == "qa":
             self.execType = "cl"
@@ -179,6 +181,9 @@ class Step():
         # 1. send signal
         # 2. send request
 
+        if (self.stepClean is not None):
+            self.stepClean(self.stepCleanArgs)
+
         # check finalStatus
         isSuccess = self.isFinalSuccess() 
 
@@ -244,6 +249,17 @@ class StepInit():
             url="http://{}:50070".format(hdfs.partition(':')[0]))
         client.download(hdfs_path=hdfsFastq, local_path=localFastq)
 
+    def pkgResultInit(self, args):
+
+        cmds1 = ['hdfs', 'mkdir', '-p', config.hdfs_in['pkgResult']]
+        cmds2 = ['hdfs', 'cp', '-r', 
+                config.hdfs_out['upload'], config.hdfs_out['align'],
+                config.hdfs_out['snv'], config.hdfs_out['qa'],
+                config.hdfs_in['pkgResult']]
+
+        rc1 = subprocess.call(cmds1)
+        rc2 = subprocess.call(cmds2)
+
 class StepClean():
 
     def qaClean(self, args):
@@ -257,3 +273,4 @@ class StepClean():
             url="http://{}:50070".format(hdfs.partition(':')[0]))
 
         client.upload(local_path=localQa, hdfs_path=hdfsQa)
+

@@ -24,6 +24,7 @@ hdfs_in = dict(
     align = hdfs_out['upload']
     snv = os.path.join(hdfs_out['align'], "bamfiles")
     qa = hdfs_out['upload']
+    pkgResult = "hdfs://{0}/user/GCBI/sequencing/pkg_{1}"
 )
 
 hdfs_config = dict(
