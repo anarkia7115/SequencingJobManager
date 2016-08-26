@@ -42,6 +42,6 @@ local_config = dict(
 )
 
 bin = dict(
-    qa = "/online/home/GCBI/git/qc_for_ngs/bin", 
+    qa = "/online/home/GCBI/git/qc_for_ngs/bin/qc", 
     pkgResult = "/online/home/GCBI/workspace/combine-file/combine-snp-indel.sh"
 )
