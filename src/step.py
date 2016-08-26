@@ -278,7 +278,7 @@ class StepInit():
         rc1 = subprocess.call(cmds1)
         rc2 = subprocess.call(cmds2)
 
-        if not (rc1 == 0 && rc2 == 0):
+        if not (rc1 == 0 and rc2 == 0):
             print >> sys.stderr, "pkg init failed"
             return False
         else:
