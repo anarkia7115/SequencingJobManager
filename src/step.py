@@ -137,11 +137,21 @@ class Step():
         from status import StatusChecker
         from executor import CommandLineExecutor, HadoopAppExecutor
 
+        # send start signal
+        # create return json
+        returnJson = dict()
+        returnJson['step'] = self.step
+
+        returnJson['result'] = False
+        returnJson['timeType'] = 'startTime'
+
+        self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
+
         try:
             inited = self.stepInit(self.stepInitArgs)
             if(not inited): 
                 print >> sys.stderr, "{0} init failed".format(self.step)
-                self.status = "finished"
+                self.cleanUp()
                 self.sc = StatusChecker("error init")
                 return
 
@@ -161,16 +171,6 @@ class Step():
         self.status = "running"
         finishSignal = xqtr.run()
 
-        # send start signal
-        # create return json
-        returnJson = dict()
-        returnJson['step'] = self.step
-
-        returnJson['result'] = False
-        returnJson['timeType'] = 'startTime'
-
-        self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
-
         # init status checker
         self.sc = StatusChecker(finishSignal)
 
@@ -185,7 +185,7 @@ class Step():
         elif self.status == "running":
             if self.foundFinishSignal():
                 self.cleanUp()
-                self.status = "finished"
+
         return
 
     def isFinalSuccess(self):
@@ -199,8 +199,6 @@ class Step():
             cleaned = self.stepClean(self.stepCleanArgs)
             if(not cleaned):
                 print >> sys.stderr, "{0} clean failed".format(self.step)
-                self.status = "finished"
-                return
 
         except AttributeError:
             print "skip clean for {0}".format(self.step)
@@ -208,6 +206,7 @@ class Step():
         # check finalStatus
         isSuccess = self.isFinalSuccess() 
 
+        # send request
         # create return json
         returnJson = dict()
         returnJson['step'] = self.step
@@ -220,7 +219,7 @@ class Step():
         returnJson['timeType'] = 'endTime'
         self.rs.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
-        # send request
+        self.status = "finished"
 
         return
 
@@ -298,8 +297,8 @@ class StepInit():
 
     def pkgResultInit(self, args):
 
-        cmds1 = ['hdfs', 'mkdir', '-p', config.hdfs_in['pkgResult']]
-        cmds2 = ['hdfs', 'cp', '-r', config.hdfs_out['align'],
+        cmds1 = ['hdfs', '-mkdir', '-p', config.hdfs_in['pkgResult']]
+        cmds2 = ['hdfs', '-cp', '-r', config.hdfs_out['align'],
                 config.hdfs_out['snv'], config.hdfs_out['qa'],
                 config.hdfs_in['pkgResult']]
 
