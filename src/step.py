@@ -69,7 +69,7 @@ class StepManager():
                     time.sleep(1)
                     break
                 # if step meets all prerequisites but not running
-                elif s.isReady():
+                elif s.isReady(self.finishedSteps):
                     print "starting {0}...".format(s.getStepName())
                     initStatus = s.stepInit()
                     if(initStatus):
