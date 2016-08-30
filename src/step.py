@@ -8,15 +8,15 @@ import config
 from executor import CommandLineExecutor, HadoopAppExecutor
 
 def callStep(stepName, args):
-    if stepName = 'distribution':
+    if stepName == 'distribution':
         return DistributionStep(*args)
-    elif stepName = 'align':
+    elif stepName == 'align':
         return AlignStep(*args)
-    elif stepName = 'variation':
+    elif stepName == 'variation':
         return VariationStep(*args)
-    elif stepName = 'qa':
+    elif stepName == 'qa':
         return QaStep(*args)
-    elif stepName = 'pkgResult':
+    elif stepName == 'pkgResult':
         return PkgResultStep(*args)
     else:
         print >> sys.stderr, "step: {0} not found".format(stepName)
