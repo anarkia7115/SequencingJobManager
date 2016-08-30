@@ -352,7 +352,7 @@ class PkgResultStep(StepModel):
         indelBin = config.bin['vcf4convert']
 
         # get to local
-        downloadCmd = ['hdfs', '-get', '-r', vcfPath, qaPath, localPkg]
+        downloadCmd = ['hdfs', 'dfs', '-get', '-r', vcfPath, qaPath, localPkg]
         rc = subprocess.call(downloadCmd)
         if not (rc == 0):
             print >> sys.stderr, "pkg init failed during download hdfs files"
