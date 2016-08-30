@@ -335,7 +335,7 @@ class PkgResultStep(StepModel):
     def stepInit(self):
 
         vcfPath = os.path.join(config.hdfs_out['snv'], "merge/HalvadeCombined.vcf")
-        qaPath = os.path.joib(config.hdfs_out['qa'], "*")
+        qaPath = os.path.join(config.hdfs_out['qa'], "*")
 
         localPkg = config.local_config['local_pkgResult'].format(self.jobID)
 
