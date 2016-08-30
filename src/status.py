@@ -25,10 +25,13 @@ class StatusChecker():
                 status = self.checkHdfsFile(signal)
             elif(signal.startswith('job_')):
                 status = self.checkHadoopJob(signal)
+            elif(signal == "testTrue"):
+                self.success = True
+                status = True
             else:
                 print >> sys.stderr, "unknown signal type: {0}".format(signal)
                 self.success = False 
-                return True
+                status = True
 
         elif(type(signal) is subprocess.Popen):
             # if is process handle
@@ -65,7 +68,7 @@ class StatusChecker():
         print >> sys.stderr, "signal info: {0}".format(filePath)
         sys.exit(-1)
 
-    def isFinalSuccess(self):
+    def isSuccess(self):
         return self.success
 
     def checkHadoopJob(self, jobID):
