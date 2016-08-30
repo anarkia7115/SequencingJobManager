@@ -99,9 +99,7 @@ class ArgsGenerator():
 
         #TODO
         elif step == 'pkgResult':
-            args = [ config.bin['pkgResult'], 
-                     config.hdfs_in['pkgResult'] ]
-            return [str(i) for i in args ]
+            return []
 
         #TODO
         elif step == 'qa':
