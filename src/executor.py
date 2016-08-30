@@ -13,7 +13,9 @@ class CommandLineExecutor():
         # init process runner
         try:
             proc = subprocess.Popen(self.args, stdout=subprocess.PIPE)
-            return proc
+            # test
+            return "testTrue"
+            #return proc
         except OSError, e:
             print >>sys.stderr, "Execution failed:", e
 
