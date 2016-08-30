@@ -366,18 +366,20 @@ class PkgResultStep(StepModel):
             return False
 
         # add Headers
-        with open(localSnpOut, 'w') as fso, open(localIndelOut, 'w') as fdo,
-        open(localSnp) as fsi, open(localIndel) as fdi, open(localVcfHeader) as
-        fheader:
-            for hl in fheader:
-                fso.write(hl)
-                fdo.write(hl)
+        with open(localSnpOut, 'w') as fso:
+            with open(localIndelOut, 'w') as fdo: 
+                with open(localSnp) as fsi: 
+                    with open(localIndel) as fdi: 
+                        with open(localVcfHeader) as fheader:
+                            for hl in fheader:
+                                fso.write(hl)
+                                fdo.write(hl)
 
-            for l in fsi:
-                fso.write(l)
+                            for l in fsi:
+                                fso.write(l)
 
-            for l in fdi:
-                fdo.write(l)
+                            for l in fdi:
+                                fdo.write(l)
 
         # run indel
         indelCmd = [indelBin, localIndelOut, localIndelOut2]
