@@ -32,8 +32,7 @@ hdfs_out = dict(
 hdfs_in = dict(
     align = hdfs_out['upload'],
     snv = os.path.join(hdfs_out['align'], "bamfiles"),
-    qa = hdfs_out['upload'],
-    pkgResult = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['pkgResult'])
+    qa = hdfs_out['upload']
 )
 
 hdfs_config = dict(
@@ -47,10 +46,15 @@ local_config = dict(
     tmp_folder = "/tmp/halvade",
     tmp_manifest = "/tmp/sample_{0}.manifest", 
     local_fastq = "/online/GCBI/fastq/{0}", 
-    local_qa = "/online/GCBI/qa/{0}"
+    local_qa = "/online/GCBI/qa/{0}",
+    local_pkgResult = "/online/GCBI/pkgResult/{0}",
+    local_vcf_header = "/online/home/GCBI/workspace/combine-file/vcf.header",
+    local_result = "/online/GCBI/result/{0}"
 )
 
 bin = dict(
     qa = "/online/home/GCBI/git/qc_for_ngs/bin/qc", 
-    pkgResult = "/online/home/GCBI/workspace/combine-file/combine-snp-indel.sh"
+    combine_snp_indel = "/online/home/GCBI/workspace/combine-file/combine-snp-indel.sh", 
+    separ_snp_indel = "/online/home/GCBI/workspace/combine-file/separ_snp_indel",
+    vcf4convert = "/online/home/GCBI/workspace/combine-file/vcf4convert"
 )
