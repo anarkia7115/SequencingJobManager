@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import config
 from executor import CommandLineExecutor, HadoopAppExecutor
+from status import StatusChecker
 
 def callStep(stepName, args):
     if stepName == 'distribution':
@@ -64,7 +65,7 @@ class StepManager():
                     else:
                         print "step {0} finished with error".format(s.getStepName())
                         self.stepWithError = True
-                        self.sendRequest(resultSucc=False, isStart=False)
+                        s.sendRequest(resultSucc=False, isStart=False)
                         break
                     time.sleep(1)
                     break
@@ -184,7 +185,7 @@ class DistributionStep(StepModel):
         return True
 
     def start(self):
-        super.start()
+        super(DistributionStep, self).start()
         xqtr = CommandLineExecutor(self.args)
         processHandle = xqtr.run()
         self.statusChecker = StatusChecker(processHandle)
@@ -207,7 +208,7 @@ class AlignStep(StepModel):
         return True
 
     def start(self):
-        super.start()
+        super(AlignStep, self).start()
         xqtr = CommandLineExecutor(self.args)
         processHandle = xqtr.run()
         self.statusChecker = StatusChecker(processHandle)
@@ -230,7 +231,7 @@ class VariationStep(StepModel):
         return True
 
     def start(self):
-        super.start()
+        super(VariationStep, self).start()
         xqtr = CommandLineExecutor(self.args)
         processHandle = xqtr.run()
         self.statusChecker = StatusChecker(processHandle)
@@ -289,7 +290,7 @@ class QaStep(StepModel):
         return True
 
     def start(self):
-        super.start()
+        super(QaStep, self).start()
         xqtr = CommandLineExecutor(self.args)
         processHandle = xqtr.run()
         self.statusChecker = StatusChecker(processHandle)
@@ -334,15 +335,15 @@ class PkgResultStep(StepModel):
     """
     def stepInit(self):
 
-        vcfPath = os.path.join(config.hdfs_out['snv'], "merge/HalvadeCombined.vcf")
-        qaPath = os.path.join(config.hdfs_out['qa'], "*")
+        vcfPath = os.path.join(config.hdfs_out['snv'].format(self.jobID), "merge/HalvadeCombined.vcf")
+        qaPath = os.path.join(config.hdfs_out['qa'].format(self.jobID), "*")
 
         localPkg = config.local_config['local_pkgResult'].format(self.jobID)
 
         localVcf = os.path.join(localPkg, "HalvadeCombined.vcf")
 
-        localSnp = localVcf + ".snp"
-        localIndel = localVcf + ".indel"
+        localSnp = localVcf + "result.snp"
+        localIndel = localVcf + "result.indel"
         localSnpOut = os.path.join(localPkg, "sample_basic_snp-snp.vcf") 
         localIndelOut = os.path.join(localPkg, "sample_basic_indel-indel.vcf") 
         localIndelOut2 = os.path.join(localPkg, "sample_basic2_indel-indel.vcf") 
@@ -352,7 +353,8 @@ class PkgResultStep(StepModel):
         indelBin = config.bin['vcf4convert']
 
         # get to local
-        downloadCmd = ['hdfs', 'dfs', '-get', '-r', vcfPath, qaPath, localPkg]
+        os.mkdir(localPkg)
+        downloadCmd = ['hdfs', 'dfs', '-get', vcfPath, qaPath, localPkg]
         rc = subprocess.call(downloadCmd)
         if not (rc == 0):
             print >> sys.stderr, "pkg init failed during download hdfs files"
@@ -394,7 +396,7 @@ class PkgResultStep(StepModel):
         Do Nothing
     """
     def start(self):
-        super.start()
+        super(PkgResultStep, self).start()
         return None
 
     def isFinished(self):
@@ -420,8 +422,8 @@ class PkgResultStep(StepModel):
 
         localVcf = os.path.join(localPkg, "HalvadeCombined.vcf")
 
-        localSnp = localVcf + ".snp"
-        localIndel = localVcf + ".indel"
+        localSnp = localVcf + "result.snp"
+        localIndel = localVcf + "result.indel"
 
         # remove unused files
         os.remove(localVcf)
@@ -429,7 +431,7 @@ class PkgResultStep(StepModel):
         os.remove(localIndel)
 
         # zip files
-        zipCmd = ['zip', '-mj', localZip, os.path.join(localPkg, '*')]
+        zipCmd = ['zip', '-mj', localZip, '-r', localPkg]
         rc = subprocess.call(zipCmd)
         if not (rc == 0):
             print >> sys.stderr, "pkg clean failed during zip"
