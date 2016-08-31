@@ -26,7 +26,7 @@ hdfs_out = dict(
      upload = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['upload'])
     ,align  = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['align'])
     ,snv    = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['snv'])
-    ,vcf    = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['snv']) + \ 
+    ,vcf    = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['snv']) + \
                                            "/merge/HalvadeCombined.vcf"
     ,qa     = "hdfs://{0}{1}".format(host['hdfs'], hdfs_base['qa'])
 )
