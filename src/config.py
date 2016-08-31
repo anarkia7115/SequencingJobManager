@@ -48,13 +48,14 @@ local_config = dict(
     local_fastq = "/online/GCBI/fastq/{0}", 
     local_qa = "/online/GCBI/qa/{0}",
     local_pkgResult = "/online/GCBI/pkgResult/{0}",
-    local_vcf_header = "/online/home/GCBI/workspace/combine-file/vcf.header",
+    local_vcf_header = "/online/home/GCBI/git/combine-file/vcf.header",
     local_result = "/online/GCBI/result/{0}"
 )
 
 bin = dict(
     qa = "/online/home/GCBI/git/qc_for_ngs/bin/qc", 
-    combine_snp_indel = "/online/home/GCBI/workspace/combine-file/combine-snp-indel.sh", 
-    separ_snp_indel = "/online/home/GCBI/workspace/combine-file/separ_snp_indel",
-    vcf4convert = "/online/home/GCBI/workspace/combine-file/vcf4convert"
+    combine_snp_indel = "/online/home/GCBI/git/combine-file/combine-snp-indel.sh", 
+    separ_snp_indel = "/online/home/GCBI/git/combine-file/separ_snp_indel",
+    #vcf4convert = "/online/home/GCBI/git/combine-file/vcf4convert"
+    vcf4convert = "touch"
 )
