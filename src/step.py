@@ -335,25 +335,29 @@ class PkgResultStep(StepModel):
     """
     def stepInit(self):
 
-        vcfPath = os.path.join(config.hdfs_out['snv'].format(self.jobID), "merge/HalvadeCombined.vcf")
-        qaPath = os.path.join(config.hdfs_out['qa'].format(self.jobID), "*")
+        vcfPath         = config.hdfs_out['vcf'].format(self.jobID)
+        qaPath          = config.hdfs_out['qa'].format(self.jobID) + "/*"
 
-        localPkg = config.local_config['local_pkgResult'].format(self.jobID)
+        localPkg        = config.local_config['local_pkgResult'].format(self.jobID)
 
-        localVcf = os.path.join(localPkg, "HalvadeCombined.vcf")
+        localVcf        = config.local_config['local_vcf'].format(self.jobID)
+        localVcfHeader  = config.local_config['local_vcf_header'] 
 
-        localSnp = localVcf + "result.snp"
-        localIndel = localVcf + "result.indel"
-        localSnpOut = os.path.join(localPkg, "sample_basic_snp-snp.vcf") 
-        localIndelOut = os.path.join(localPkg, "sample_basic_indel-indel.vcf") 
-        localIndelOut2 = os.path.join(localPkg, "sample_basic2_indel-indel.vcf") 
+        localSnp        = config.local_config['local_snp'].format(self.jobID)
+        localSnpOut     = config.local_config['local_snp_out'].format(self.jobID)
+        localIndel      = config.local_config['local_indel'].format(self.jobID)
+        localIndelOut   = config.local_config['local_indel_out'].format(self.jobID)
+        localIndelOut2  = config.local_config['local_indel_out2'].format(self.jobID)
 
-        localVcfHeader = config.local_config['local_vcf_header'] 
         separBin = config.bin['separ_snp_indel']
         indelBin = config.bin['vcf4convert']
 
         # get to local
-        os.mkdir(localPkg)
+        try:
+            os.mkdir(localPkg)
+        except OSError:
+            print("{0} exists!".format(localPkg))
+
         downloadCmd = ['hdfs', 'dfs', '-get', vcfPath, qaPath, localPkg]
         rc = subprocess.call(downloadCmd)
         if not (rc == 0):
@@ -416,14 +420,15 @@ class PkgResultStep(StepModel):
     """
     def cleanUp(self):
 
-        localPkg = config.local_config['local_pkgResult'].format(self.jobID)
+        localPkg    = config.local_config['local_pkgResult'].format(self.jobID)
+
         localResult = config.local_config['local_result'].format(self.jobID) 
-        localZip = os.path.join(localPkg, 'result.zip')
+        localVcf    = config.local_config['local_vcf'].format(self.jobID)
+        localSnp    = config.local_config['local_snp'].format(self.jobID)
 
-        localVcf = os.path.join(localPkg, "HalvadeCombined.vcf")
+        localIndel  = config.local_config['local_indel'].format(self.jobID)
 
-        localSnp = localVcf + "result.snp"
-        localIndel = localVcf + "result.indel"
+        localZip    = os.path.join(localResult, 'result.zip')
 
         # remove unused files
         os.remove(localVcf)
@@ -431,6 +436,11 @@ class PkgResultStep(StepModel):
         os.remove(localIndel)
 
         # zip files
+        try:
+            os.mkdir(localResult)
+        except OSError:
+            print("{0} exists!".format(localResult))
+
         zipCmd = ['zip', '-mj', localZip, '-r', localPkg]
         rc = subprocess.call(zipCmd)
         if not (rc == 0):
@@ -438,7 +448,6 @@ class PkgResultStep(StepModel):
             return False
 
         # move to target
-        os.mkdir(localResult)
-        shutil.move(localZip, localResult)
+        #shutil.move(localZip, localResult)
 
         return True
