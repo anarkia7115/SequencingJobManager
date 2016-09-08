@@ -3,7 +3,7 @@ host = dict(
      hdfshost           = "node19"
     ,hdfs               = "node19:9000"
     ,rmhost             = "node19"
-    ,request            = "mgmt:8081"
+    ,request            = "mgmt:8088"
     ,local_server_host  = "node19"
     ,local_server_port  = 8321
 )
