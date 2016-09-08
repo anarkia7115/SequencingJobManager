@@ -26,13 +26,17 @@ class JobManager():
         return
 
     def run(self):
-        steps = ['distribution', 'alignment', 'variation', 'packaging', 'qc']
+        steps = ['distribution', 'align', 'variation', 'pkgResult', 'qa']
+        #steps = ['align', 'variation', 'pkgResult', 'qa']
+        #finishedSteps = ['distribution', 'align', 'variation', 'qa']
+        finishedSteps = []
 
         # start steps
         from step import StepManager
 
         sm = StepManager(self.processID, steps, self.ag, self.rs)
-        sm.wait()
+        sm.addFinishedSteps(finishedSteps)
+        self.withError = sm.wait()
         self.cleanUp()
 
     """ 
@@ -47,10 +51,14 @@ class JobManager():
         # create request signal
         returnJson = dict()
         returnJson['clusterId'] = self.clusterID
-        returnJson['result'] = True
+
+        if(self.withError):
+            returnJson['result'] = False
+        else:
+            returnJson['result'] = True
 
         # send request signal
-        self.rs.send(returnJson, "/gcbi/ch/inner/cluster/clusterEnd")
+        self.rs.send(returnJson, "/nosec/cluster/clusterEnd")
 
         return
 

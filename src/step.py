@@ -1,7 +1,28 @@
 #!/usr/bin/env python
 import time
 import sys
+import os
+import shutil
+import subprocess
 import config
+from executor import CommandLineExecutor, HadoopAppExecutor
+from status import StatusChecker
+
+def callStep(stepName, args):
+    if stepName == 'distribution':
+        return DistributionStep(*args)
+    elif stepName == 'align':
+        return AlignStep(*args)
+    elif stepName == 'variation':
+        return VariationStep(*args)
+    elif stepName == 'qa':
+        return QaStep(*args)
+    elif stepName == 'pkgResult':
+        return PkgResultStep(*args)
+    else:
+        print >> sys.stderr, "step: {0} not found".format(stepName)
+        sys.exit(-1)
+
 
 class StepManager():
 
@@ -9,35 +30,56 @@ class StepManager():
         self.jobID = jobID
         self.resultPath = ag.getResultPath()
         self.rs = rs
+        self.stepWithError = False
 
         # create Step
         self.steps = []
         for s in steps:
-            self.steps.append(Step(s, jobID, ag, rs))
+            self.steps.append(callStep(s, [s, jobID, ag, rs]))
 
         self.finishedSteps = set()
         return
+
+    def addFinishedSteps(self, fs):
+        # union 2 finished steps
+        self.finishedSteps |= set(fs)
 
     def wait(self):
         # loop until steps reduce to 0
         while(len(self.steps) > 0):
 
+            if (self.stepWithError):
+                break
+
             # refresh step status
             for i in range(0, len(self.steps)):
                 s = self.steps[i]
-                print "".format(s.getStatus())
-                s.refresh(self.finishedSteps)
 
                 # if step finished
                 if s.isFinished():
                     self.steps.pop(i)
                     self.finishedSteps.add(s.getStepName())
+                    cleanStatus = s.cleanUp()
+                    if (s.isSuccess() and cleanStatus):
+                        s.sendRequest(resultSucc=True, isStart=False)
+                    else:
+                        print "step {0} finished with error".format(s.getStepName())
+                        self.stepWithError = True
+                        s.sendRequest(resultSucc=False, isStart=False)
+                        break
                     time.sleep(1)
                     break
                 # if step meets all prerequisites but not running
-                elif s.isReady():
-                    s.start(s.getArgs())
-                    print "{0} is started".format(s.getStepName())
+                elif s.isReady(self.finishedSteps):
+                    print "starting {0}...".format(s.getStepName())
+                    initStatus = s.stepInit()
+                    if(initStatus):
+                        s.start()
+                        print "{0} is started".format(s.getStepName())
+                    else:
+                        print "step {0} inited with error".format(s.getStepName())
+                        self.stepWithError = True
+                        break
                     time.sleep(1)
                     break
             # self end 
@@ -47,138 +89,367 @@ class StepManager():
         # TODO: do something to result path
 
         self.cleanUp()
-        return 
+        return self.stepWithError
 
     def cleanUp(self):
         print "cleaning up Step Manager"
 
         # create request signal
         returnJson = dict()
-        returnJson['resultPath'] = self.resultPath
+        returnJson['resultPath'] = \
+        config.local_config['local_pkgResult'].format(self.jobID) + \
+        "/result.zip"
 
         # send request signal
-        self.rs.send(returnJson, '/gcbi/ch/inner/cluster/sampleAnalyzeResult')
+        self.rs.send(returnJson, '/nosec/cluster/sampleAnalyzeResult')
 
         return
 
-class Step():
+"""
+    Step Interface
+"""
+class StepModel(object):
 
-    def __init__(self, stepName, jobID, argsGen, rs):
+    def __init__(self, stepName, jobID, argsGenerator, requestSender):
 
-        self.status = "pending"
+        self.jobID          = jobID
+        self.step           = stepName
+        self.requestSender  = requestSender
+        self.args           = argsGenerator.generateArgs(self.step)
 
-        self.step = stepName
-        self.jobID = jobID
-        self.args = argsGen.generateArgs(self.step)
-        self.rs = rs
+        self.isRunning = False
+        self.setPrerequisites()
 
-        self.prerequisites = set()
-
-        # init step specified infos
-        if self.step == "distribution":
-            self.execType = "cl"
-            # self.prerequisites is empty
-            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
-        elif self.step == "alignment":
-            self.execType = "ha"
-            self.prerequisites.add("distribution")
-            self.finishSignal = "job_alignment"
-        elif self.step == "variation":
-            self.execType = "ha"
-            self.prerequisites.add("alignment")
-            self.finishSignal = "job_variation"
-        elif self.step == "packaging":
-            self.execType = "cl"
-            self.prerequisites.add("variation")
-            self.prerequisites.add("qc")
-            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
-        elif self.step == "qc":
-            self.execType = "cl"
-            self.prerequisites.add("distribution")
-            self.finishSignal = config.hdfs_config['signal'].format(self.step, self.jobID)
-
-        else:
-            print >> sys.stderr, "unknown step name: {0}".format(self.step)
-            sys.exit(-1)
-
-        # init status checker
-        from status import StatusChecker
-        self.sc = StatusChecker(self.finishSignal)
+        self.sendRequest(resultSucc=False, isStart=True)
 
         return
 
-    def start(self, args):
-        from executor import CommandLineExecutor, HadoopAppExecutor
-
-        if self.execType == 'cl':
-            xqtr = CommandLineExecutor(args)
-        elif self.execType == 'ha':
-            xqtr = HadoopAppExecutor(args)
-        else:
-            print >> sys.stderr, "unknown execType: {0}".format(self.execType)
-            sys.exit(-1)
-
-        self.status = "running"
-        xqtr.run()
-
-        return
-
-    def refresh(self, finishedSteps):
-        if self.status == "pending":
-            # see if meetPrerequisites ?
-            if self.meetPrerequisites(finishedSteps):
-                self.status = "ready"
-
-        elif self.status == "running":
-            if self.foundFinishSignal():
-                self.cleanUp()
-                self.status = "finished"
+    def start(self):
+        self.isRunning = True
         return
 
     def cleanUp(self):
-        # 1. send signal
-        # 2. send request
-
-        # create return json
-        returnJson = dict()
-        returnJson['step'] = self.step
-        returnJson['result'] = True
-
-        self.rs.send(returnJson, '/gcbi/ch/inner/cluster/updateAnalyzeStep')
-
-        # send request
-
+        raise NotImplementedError("Please Implement this method")
         return
 
-    def isFinished(self):
-        if self.status == "finished":
-            return True
-        else:
-            return False
+    def setPrerequisites(self):
+        raise NotImplementedError("Please Implement this method")
+        return
 
-    def isReady(self):
-        if self.status == "ready":
-            return True
-        else:
-            return False
+    def stepInit(self):
+        raise NotImplementedError("Please Implement this method")
+        return
 
-    def foundFinishSignal(self):
-        status = self.sc.check()
-        return status
+    def sendRequest(self, resultSucc, isStart):
+        returnJson = dict()
+        returnJson['step'] = self.step
+
+        returnJson['result'] = resultSucc
+        if(isStart):
+            returnJson['timeType'] = 'startTime'
+        else:
+            returnJson['timeType'] = 'endTime'
+
+        self.requestSender.send(returnJson, '/nosec/cluster/updateAnalyzeStep')
 
     def getStepName(self):
         return self.step
 
-    def getArgs(self):
-        return self.args
+    def isReady(self, finishedSteps):
 
-    def meetPrerequisites(self, finishedSet):
-
-        if self.prerequisites.issubset(finishedSet):
+        if self.prerequisites.issubset(finishedSteps) and not self.isRunning:
             return True
         else:
             return False
 
-    def getStatus(self):
-        return self.status
+    def isFinished(self):
+        try:
+            status = self.statusChecker.check()
+        except AttributeError:
+            "{0} not started".format(self.step)
+            return False
 
+        return status
+
+    def isSuccess(self):
+        return self.statusChecker.isSuccess()
+
+"""
+    Distribution
+"""
+class DistributionStep(StepModel):
+
+    def setPrerequisites(self):
+        self.prerequisites = set()
+        return
+
+    def stepInit(self):
+        return True
+
+    def start(self):
+        super(DistributionStep, self).start()
+        xqtr = CommandLineExecutor(self.args)
+        processHandle = xqtr.run()
+        self.statusChecker = StatusChecker(processHandle)
+
+        return processHandle
+
+    def cleanUp(self):
+        return True
+
+"""
+    Align
+"""
+class AlignStep(StepModel):
+
+    def setPrerequisites(self):
+        self.prerequisites = set()
+        self.prerequisites.add("distribution")
+
+    def stepInit(self):
+        return True
+
+    def start(self):
+        super(AlignStep, self).start()
+        xqtr = CommandLineExecutor(self.args)
+        processHandle = xqtr.run()
+        self.statusChecker = StatusChecker(processHandle)
+
+        return processHandle
+
+    def cleanUp(self):
+        return True
+
+"""
+    Variation
+"""
+class VariationStep(StepModel):
+
+    def setPrerequisites(self):
+        self.prerequisites = set()
+        self.prerequisites.add("align")
+
+    def stepInit(self):
+        return True
+
+    def start(self):
+        super(VariationStep, self).start()
+        xqtr = CommandLineExecutor(self.args)
+        processHandle = xqtr.run()
+        self.statusChecker = StatusChecker(processHandle)
+
+        return processHandle
+
+    def cleanUp(self):
+        return True
+
+"""
+    Qa
+"""
+class QaStep(StepModel):
+
+    def setPrerequisites(self):
+        self.prerequisites = set()
+        self.prerequisites.add("distribution")
+        return
+
+    def stepInit(self):
+
+        hdfsFastq = config.hdfs_base['upload'].format(self.jobID)
+        localFastq = config.local_config['local_fastq'].format(self.jobID)
+
+        # check folder exists
+        if (os.path.exists(localFastq)):
+            shutil.rmtree(localFastq)
+            print("{0} is removed".format(localFastq))
+
+        # download from hdfs to local
+        import hdfs
+
+        print("{0} to {1} in qc init...".format(hdfsFastq, localFastq))
+        try:
+            client = hdfs.InsecureClient(
+                url="http://{0}:50070".format(config.host['hdfshost']))
+            client.download(hdfs_path=hdfsFastq, local_path=localFastq)
+        except hdfs.HdfsError:
+            print >> sys.stderr, "qc init failed during hdfs downloading"
+            return False
+
+        print("download finished")
+
+        # decompressing
+        decCmd = ['gunzip', '-r', localFastq]
+
+        print("decompressing...")
+        decRc = subprocess.call(decCmd)
+
+        if not (decRc == 0):
+            print >> sys.stderr, "qc init failed during decompressing"
+            return False
+
+        print("decompress finished")
+
+        return True
+
+    def start(self):
+        super(QaStep, self).start()
+        xqtr = CommandLineExecutor(self.args)
+        processHandle = xqtr.run()
+        self.statusChecker = StatusChecker(processHandle)
+
+        return processHandle
+
+    def cleanUp(self):
+
+        localQa = config.local_config['local_qa'].format(self.jobID)
+        hdfsQa = config.hdfs_base['qa'].format(self.jobID)
+
+        import hdfs
+
+        # upload to hdfs
+        try:
+            client = hdfs.InsecureClient(
+                url="http://{0}:50070".format(config.host['hdfshost']))
+
+            client.upload(local_path=localQa, hdfs_path=hdfsQa)
+        except hdfs.HdfsError:
+            print >> sys.stderr, "qc clean failed"
+            return False
+
+        return True
+
+"""
+    PkgResult
+"""
+class PkgResultStep(StepModel):
+
+    def setPrerequisites(self):
+        self.prerequisites = set()
+        self.prerequisites.add("variation")
+        self.prerequisites.add("qa")
+        return
+
+    """
+        Get merged vcf, qa files to local
+        Run separ_snp_indel
+        Add headers to *.snp, *.indel
+        Run vcf4convert
+    """
+    def stepInit(self):
+
+        vcfPath         = config.hdfs_out['vcf'].format(self.jobID)
+        qaPath          = config.hdfs_out['qa'].format(self.jobID) + "/*"
+
+        localPkg        = config.local_config['local_pkgResult'].format(self.jobID)
+
+        localVcf        = config.local_config['local_vcf'].format(self.jobID)
+        localVcfHeader  = config.local_config['local_vcf_header'] 
+
+        localSnp        = config.local_config['local_snp'].format(self.jobID)
+        localSnpOut     = config.local_config['local_snp_out'].format(self.jobID)
+        localIndel      = config.local_config['local_indel'].format(self.jobID)
+        localIndelOut   = config.local_config['local_indel_out'].format(self.jobID)
+        localIndelOut2  = config.local_config['local_indel_out2'].format(self.jobID)
+
+        separBin = config.bin['separ_snp_indel']
+        indelBin = config.bin['vcf4convert']
+
+        # get to local
+        try:
+            os.mkdir(localPkg)
+        except OSError:
+            print("{0} exists!".format(localPkg))
+
+        downloadCmd = ['hdfs', 'dfs', '-get', vcfPath, qaPath, localPkg]
+        rc = subprocess.call(downloadCmd)
+        if not (rc == 0):
+            print >> sys.stderr, "pkg init failed during download hdfs files"
+            return False
+
+        # separate vcf
+        separCmd = [separBin, '-f', localVcf]
+        rc = subprocess.call(separCmd)
+        if not (rc == 0):
+            print >> sys.stderr, "pkg init failed during separating vcf"
+            return False
+
+        # add Headers
+        with open(localSnpOut, 'w') as fso:
+            with open(localIndelOut, 'w') as fdo: 
+                with open(localSnp) as fsi: 
+                    with open(localIndel) as fdi: 
+                        with open(localVcfHeader) as fheader:
+                            for hl in fheader:
+                                fso.write(hl)
+                                fdo.write(hl)
+
+                            for l in fsi:
+                                fso.write(l)
+
+                            for l in fdi:
+                                fdo.write(l)
+
+        # run indel
+        indelCmd = [indelBin, localIndelOut, localIndelOut2]
+        rc = subprocess.call(indelCmd)
+        if not (rc == 0):
+            print >> sys.stderr, "pkg init failed during indel"
+            return False
+
+        return True
+
+    """
+        Do Nothing
+    """
+    def start(self):
+        super(PkgResultStep, self).start()
+        return None
+
+    def isFinished(self):
+        if (self.isRunning):
+            return True
+        else:
+            "{0} not started".format(self.step)
+            return False
+
+    def isSuccess(self):
+        return True
+
+    """
+        Remove unused files
+        Zip files
+        Move to result path
+    """
+    def cleanUp(self):
+
+        localPkg    = config.local_config['local_pkgResult'].format(self.jobID)
+
+        localResult = config.local_config['local_result'].format(self.jobID) 
+        localVcf    = config.local_config['local_vcf'].format(self.jobID)
+        localSnp    = config.local_config['local_snp'].format(self.jobID)
+
+        localIndel  = config.local_config['local_indel'].format(self.jobID)
+
+        localZip    = os.path.join(localResult, 'result.zip')
+
+        # remove unused files
+        os.remove(localVcf)
+        os.remove(localSnp)
+        os.remove(localIndel)
+
+        # zip files
+        try:
+            os.mkdir(localResult)
+        except OSError:
+            print("{0} exists!".format(localResult))
+
+        zipCmd = ['zip', '-mj', localZip, '-r', localPkg]
+        rc = subprocess.call(zipCmd)
+        if not (rc == 0):
+            print >> sys.stderr, "pkg clean failed during zip"
+            return False
+
+        # move to target
+        #shutil.move(localZip, localResult)
+
+        return True

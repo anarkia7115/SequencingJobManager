@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
+import os
 import sys
 import config
 
@@ -42,13 +43,12 @@ class ArgsGenerator():
             threadNum = 30
 
             # generate args
-            args = """java -jar {0}
-            -1 {1}
-            -O {2}
-            -t {3}""".format(jarFile, manifestFileName, output, threadNum)
-            return args
+            args = ['java', '-jar', jarFile, '-1', manifestFileName, 
+                    '-O', output, '-t', threadNum]
 
-        elif step == 'alignment':
+            return [str(i) for i in args ]
+
+        elif step == 'align':
             # init args
             inputFile = config.hdfs_in['align'].format(self.processID)
             outputFile = config.hdfs_out['align'].format(self.processID)
@@ -63,25 +63,15 @@ class ArgsGenerator():
             mem = 110
 
             # generate args
-            args = """hadoop jar {jf} be.ugent.intec.halvade.Halvade 
-            -libjars $LIBJARS 
-            -nodes {nodes}
-            -vcores {vc} 
-            -RT bcftools
-            -report_all
-            -I {infile}
-            -tmp {tmp}
-            -mem {m}
-            -R {ref}
-            -O {out}            
-            -aln 1
-            -B {b}
-            -D {d}
-            -smt
-            """.format(jf=jarFile, vc=vcores, b=binFile, d=nonUseVcf, m=mem,
-                     out=outputFile, infile=inputFile, ref=ref, nodes=nodes,
-                     tmp=tmpFile)
-            return args
+            args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
+                    '-libjars', os.environ['LIBJARS'], 
+                    '-I', inputFile, '-R', ref, '-O', outputFile, 
+                    '-B', binFile, '-D', nonUseVcf,
+                    '-RT', 'bcftools', '-mem', mem, '-report_all', 
+                    '-nodes', nodes, '-vcores', vcores,
+                    '-tmp', tmpFile, '-aln', '1', '-smt']
+
+            return [str(i) for i in args ]
             
         elif step == 'variation':
             # init args
@@ -97,30 +87,28 @@ class ArgsGenerator():
             mem = 110
 
             # generate args
-            args = """hadoop jar {jf} be.ugent.intec.halvade.Halvade 
-            -libjars $LIBJARS 
-            -nodes {nodes}
-            -vcores {vc} 
-            -RT bcftools
-            -report_all
-            -I {infile}
-            -mem {m}
-            -R {ref}
-            -O {out}            
-            -aln 1
-            -B {b}
-            -D {d}
-            -smt
-            """.format(jf=jarFile, vc=vcores, b=binFile, d=nonUseVcf, m=mem,
-                     out=outputFile, infile=inputFile, ref=ref, nodes=nodes)
-            return args
+            args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
+                    '-libjars', os.environ['LIBJARS'], 
+                    '-I', inputFile, '-R', ref, '-O', outputFile, 
+                    '-B', binFile, '-D', nonUseVcf,
+                    '-RT', 'bcftools', '-mem', mem, '-report_all', 
+                    '-nodes', nodes, '-vcores', vcores,
+                    '-aln', '1', '-smt']
 
-        elif step == 'packaging':
-            args = "packaging arg string"
-            return args
-        elif step == 'qc':
-            args = "qc arg string"
-            return args
+            return [str(i) for i in args ]
+
+        #TODO
+        elif step == 'pkgResult':
+            return []
+
+        #TODO
+        elif step == 'qa':
+            args = [ config.bin['qa'], 
+                     config.local_config['local_fastq'].format(self.processID),
+                     config.local_config['local_qa'].format(self.processID),
+                     self.processID]
+
+            return [str(i) for i in args ]
         else:
             print >> sys.stderr, "[Error] unknown step: {0}".format(step)
             sys.exit(-1)

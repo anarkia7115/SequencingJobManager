@@ -4,24 +4,58 @@ import urllib2
 import requests
 import config
 from datetime import datetime
+import subprocess
+import sys
+import yarn_api_client as yarn
 
 class StatusChecker():
 
     def __init__(self, finishSignal):
         self.finishSignal = finishSignal
+        self.rm = yarn.ResourceManager(config.host['rmhost'])
+        self.success = False
         return
 
     def check(self):
         signal = self.finishSignal
 
-        if (signal.startswith('hdfs')):
-            status = self.checkHdfsFile(signal)
-        elif (signal.startswith('job_')):
-            status = self.checkHadoopJob(signal)
+        if(type(signal) is str):
+            # if is string
+            if (signal.startswith('hdfs')):
+                status = self.checkHdfsFile(signal)
+            elif(signal.startswith('job_')):
+                status = self.checkHadoopJob(signal)
+            elif(signal == "testTrue"):
+                self.success = True
+                status = True
+            else:
+                print >> sys.stderr, "unknown signal type: {0}".format(signal)
+                self.success = False 
+                status = True
+
+        elif(type(signal) is subprocess.Popen):
+            # if is process handle
+            status = self.checkProcess(signal)
         else:
+            # unknown type
             status = self.checkLocalFile(signal)
 
         return status
+
+    def checkProcess(self, proc):
+        if (proc.poll() is None):
+            stdout = proc.stdout.read()
+            print("[stdout] {0}".format(stdout))
+            return False
+        else:
+            if (proc.returncode == 0):
+                print >> sys.stderr, "---self.success set to true---"
+                self.success = True
+            else:
+                print >> sys.stderr, "[ERROR] process return non-zero code: {0}".format(proc.returncode)
+                self.success = False
+            return True
+
     #TODO
     def checkHdfsFile(self, filePath):
         print "hdfsFile: {0} exists!".format(filePath)
@@ -29,12 +63,36 @@ class StatusChecker():
 
     #TODO
     def checkLocalFile(self, filePath):
-        print "localFile: {0} exists!".format(filePath)
-        return True
+        #print "localFile: {0} exists!".format(filePath)
+        print >> sys.stderr, "check local file signal not implemented"
+        print >> sys.stderr, "signal info: {0}".format(filePath)
+        sys.exit(-1)
 
-    #TODO
+    def isSuccess(self):
+        return self.success
+
     def checkHadoopJob(self, jobID):
-        print "{0} finished!".format(jobID)
+
+        # if jobID not parsable, finish check loop and make job fail
+        try:
+            app = self.rm.cluster_application(jobID)
+        except yarn.base.APIError:
+            self.success = False
+            return True
+
+        state = app.data['app']['state']
+        if (state == "FINISHED"):
+            finalStatus = app.data['app']['finalStatus']
+            if (finalStatus == "SUCCEEDED"):
+                self.success = True
+            else:
+                print >> sys.stderr, "[ERROR] hadoop finished non-successful status: {0}".format(finalStatus)
+                self.success = False
+            return True
+        else:
+            print("waiting for hadoop job: {0} to finish".format(jobID))
+            return False
+        #print "{0} finished!".format(jobID)
         return True
 
 class RequestSender():
@@ -47,7 +105,6 @@ class RequestSender():
     def send(self, returnJson, path):
         returnJson['processId'] = self.processID
         returnJson['accession'] = self.accession
-        returnJson['timeType'] = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
 
         self.post(returnJson, path)
         return
