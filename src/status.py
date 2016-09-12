@@ -44,14 +44,16 @@ class StatusChecker():
 
     def checkProcess(self, proc):
         if (proc.poll() is None):
-            stdout = proc.stdout.read()
-            print("[stdout] {0}".format(stdout))
             return False
         else:
             if (proc.returncode == 0):
+                stdout = proc.stdout.read()
+                print("[stdout] {0}".format(stdout))
                 print >> sys.stderr, "---self.success set to true---"
                 self.success = True
             else:
+                stdout = proc.stdout.read()
+                print("[stdout] {0}".format(stdout))
                 print >> sys.stderr, "[ERROR] process return non-zero code: {0}".format(proc.returncode)
                 self.success = False
             return True
