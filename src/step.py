@@ -249,7 +249,8 @@ class QaStep(StepModel):
 
     def setPrerequisites(self):
         self.prerequisites = set()
-        self.prerequisites.add("distribution")
+        # new qc do not has prerequisites
+        #self.prerequisites.add("distribution")
         return
 
     def stepInit(self):
