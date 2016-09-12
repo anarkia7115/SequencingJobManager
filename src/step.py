@@ -254,6 +254,7 @@ class QaStep(StepModel):
 
     def stepInit(self):
 
+        """
         hdfsFastq = config.hdfs_base['upload'].format(self.jobID)
         localFastq = config.local_config['local_fastq'].format(self.jobID)
 
@@ -287,6 +288,7 @@ class QaStep(StepModel):
             return False
 
         print("decompress finished")
+        """
 
         return True
 

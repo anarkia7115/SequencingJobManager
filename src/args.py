@@ -9,9 +9,13 @@ class ArgsGenerator():
 
     def __init__(self, dataJson):
         self.argsDict = self.getStepInfo(dataJson)
-        self.accession =  self.argsDict['accession']
-        self.processID =  self.argsDict['processID']
-        self.resultPath = self.argsDict['resultPath']
+        self.accession  =  self.argsDict['accession']
+        self.processID  =  self.argsDict['processID']
+        self.resultPath =  self.argsDict['resultPath']
+        self.inputDir   =  self.findCommonPrefix(self.argsDict['sampleList'])
+
+    def getInputDir(self):
+        return self.inputDir
 
     def getAccession(self):
         return self.accession
@@ -25,7 +29,7 @@ class ArgsGenerator():
     def generateArgs(self, step):
 
         if step == 'distribution':
-            # get args
+            # get local sample list
             sampleList = self.argsDict['sampleList']
 
             # generate sample list manifest
@@ -104,7 +108,7 @@ class ArgsGenerator():
         #TODO
         elif step == 'qa':
             args = [ config.bin['qa'], 
-                     config.local_config['local_fastq'].format(self.processID),
+                     self.inputDir,
                      config.local_config['local_qa'].format(self.processID),
                      self.processID]
 
@@ -137,4 +141,23 @@ class ArgsGenerator():
         argsDict['sampleList'] = sampleList
 
         return argsDict
+
+    def findCommonPrefix(self, pathList):
+        prefix = os.path.dirname(pathList[0].split()[0])
+        # all the gzs should be kept in one folder
+        for subPathPair in pathList:
+            for subPath in subPathPair.split():
+                if os.path.dirname(subPath) != prefix:
+                    print os.path.dirname(subPath)
+                    print >> sys.stderr, "fastq gzs should be in the same folder!"
+                    sys.exit(-1)
+
+        return prefix
+
+if __name__ == "__main__":
+    dataString = """ { "processId":"0", "resultPath": "/online/GCBI/result", "sampleList": [ { "accession": "GCS1001", "fastqFile": [ { "mateFile1": { "filename": "line2_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line2_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R2.fastq.gz", "protocol": "file" } }, { "mateFile1": { "filename": "line1_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line1_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R2.fastq.gz", "protocol": "file" } } ], "genomeVersion": "hg38", "species": "hsa" } ], "sampleType": "WSG" } """
+    import json
+    dataJson = json.loads(dataString)
+    ag = ArgsGenerator(dataJson)
+    print ag.getInputDir()
 
