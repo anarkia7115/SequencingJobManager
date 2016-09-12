@@ -23,7 +23,6 @@ def callStep(stepName, args):
         print >> sys.stderr, "step: {0} not found".format(stepName)
         sys.exit(-1)
 
-
 class StepManager():
 
     def __init__(self, jobID, steps, ag, rs):
@@ -72,6 +71,8 @@ class StepManager():
                 # if step meets all prerequisites but not running
                 elif s.isReady(self.finishedSteps):
                     print "starting {0}...".format(s.getStepName())
+
+                    s.sendRequest(resultSucc=False, isStart=True)
                     initStatus = s.stepInit()
                     if(initStatus):
                         s.start()
@@ -119,8 +120,6 @@ class StepModel(object):
 
         self.isRunning = False
         self.setPrerequisites()
-
-        self.sendRequest(resultSucc=False, isStart=True)
 
         return
 
