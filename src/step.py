@@ -99,9 +99,9 @@ class StepManager():
         client = hdfs.InsecureClient(
             url="http://{0}:50070".format(config.host['hdfshost']))
 
-        client.delete(hdfs_base['upload'].format(self.jobID), recursive=True)
-        client.delete(hdfs_base['align'].format(self.jobID), recursive=True)
-        client.delete(hdfs_base['snv'].format(self.jobID), recursive=True)
+        client.delete(config.hdfs_base['upload'].format(self.jobID), recursive=True)
+        client.delete(config.hdfs_base['align'].format(self.jobID), recursive=True)
+        client.delete(config.hdfs_base['snv'].format(self.jobID), recursive=True)
 
         # create request signal
         returnJson = dict()
