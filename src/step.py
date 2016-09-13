@@ -29,7 +29,7 @@ class StepManager():
         self.jobID = jobID
         self.resultPath = ag.getResultPath()
         self.rs = rs
-        self.stepWithError = False
+        self.stepIsError = False
 
         # create Step
         self.steps = []
@@ -47,7 +47,7 @@ class StepManager():
         # loop until steps reduce to 0
         while(len(self.steps) > 0):
 
-            if (self.stepWithError):
+            if (self.stepIsError):
                 break
 
             # refresh step status
@@ -63,7 +63,7 @@ class StepManager():
                         s.sendRequest(resultSucc=True, isStart=False)
                     else:
                         print "step {0} finished with error".format(s.getStepName())
-                        self.stepWithError = True
+                        self.stepIsError = True
                         s.sendRequest(resultSucc=False, isStart=False)
                         break
                     time.sleep(1)
@@ -79,7 +79,7 @@ class StepManager():
                         print "{0} is started".format(s.getStepName())
                     else:
                         print "step {0} inited with error".format(s.getStepName())
-                        self.stepWithError = True
+                        self.stepIsError = True
                         break
                     time.sleep(1)
                     break
@@ -90,10 +90,17 @@ class StepManager():
         # TODO: do something to result path
 
         self.cleanUp()
-        return self.stepWithError
+        return self.stepIsError
 
     def cleanUp(self):
         print "cleaning up Step Manager"
+        # delete intermediate files
+        client = hdfs.InsecureClient(
+            url="http://{0}:50070".format(config.host['hdfshost']))
+
+        client.delete(hdfs_base['upload'].format(self.jobID), recursive=True)
+        client.delete(hdfs_base['align'].format(self.jobID), recursive=True)
+        client.delete(hdfs_base['snv'].format(self.jobID), recursive=True)
 
         # create request signal
         returnJson = dict()
