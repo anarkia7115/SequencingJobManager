@@ -3,6 +3,7 @@ import time
 import sys
 import os
 import shutil
+import hdfs
 import subprocess
 import config
 from executor import CommandLineExecutor, HadoopAppExecutor
@@ -272,7 +273,6 @@ class QaStep(StepModel):
             print("{0} is removed".format(localFastq))
 
         # download from hdfs to local
-        import hdfs
 
         print("{0} to {1} in qc init...".format(hdfsFastq, localFastq))
         try:
@@ -312,8 +312,6 @@ class QaStep(StepModel):
 
         localQa = config.local_config['local_qa'].format(self.jobID)
         hdfsQa = config.hdfs_base['qa'].format(self.jobID)
-
-        import hdfs
 
         # upload to hdfs
         try:
