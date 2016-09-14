@@ -8,11 +8,12 @@ import config
 class ArgsGenerator():
 
     def __init__(self, dataJson):
-        self.argsDict = self.getStepInfo(dataJson)
-        self.accession  =  self.argsDict['accession']
-        self.processID  =  self.argsDict['processID']
-        self.resultPath =  self.argsDict['resultPath']
-        self.inputDir   =  self.findCommonPrefix(self.argsDict['sampleList'])
+        self.argsDict       = self.getStepInfo(dataJson)
+        self.accession      =  self.argsDict['accession']
+        self.processID      =  self.argsDict['processID']
+        self.resultPath     =  self.argsDict['resultPath']
+        self.inputDir       =  self.findCommonPrefix(self.argsDict['sampleList'])
+        self.singlePathList =  self.decouplePathList(self.argsDict['sampleList'])
 
     def getInputDir(self):
         return self.inputDir
@@ -101,14 +102,12 @@ class ArgsGenerator():
 
             return [str(i) for i in args ]
 
-        #TODO
         elif step == 'pkgResult':
             return []
 
-        #TODO
         elif step == 'qa':
             args = [ config.bin['qa'], 
-                     self.inputDir,
+                     '|'.join(self.singlePathList),
                      config.local_config['local_qa'].format(self.processID),
                      self.processID]
 
@@ -142,6 +141,14 @@ class ArgsGenerator():
 
         return argsDict
 
+    def decouplePathList(self, pathList):
+        singlePathList = []
+        for subPathPair in pathList:
+            for subPath in subPathPair.split():
+                singlePathList.append(subPath)
+
+        return singlePathList
+
     def findCommonPrefix(self, pathList):
         prefix = os.path.dirname(pathList[0].split()[0])
         # all the gzs should be kept in one folder
@@ -159,5 +166,4 @@ if __name__ == "__main__":
     import json
     dataJson = json.loads(dataString)
     ag = ArgsGenerator(dataJson)
-    print ag.getInputDir()
 
