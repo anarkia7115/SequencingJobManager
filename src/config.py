@@ -45,7 +45,7 @@ hdfs_config = dict(
 )
 
 local_config = dict(
-     tmp_folder       = "/tmp/halvade"
+     tmp_folder       = "/gcbi/halvade"
     ,tmp_manifest     = "/tmp/sample_{0}.manifest"
     ,local_fastq      = "/online/GCBI/fastq/{0}"
     ,local_qa         = "/online/GCBI/qa/{0}"
