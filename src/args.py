@@ -11,7 +11,7 @@ class ArgsGenerator():
         self.argsDict       = self.getStepInfo(dataJson)
         self.accession      =  self.argsDict['accession']
         self.processID      =  self.argsDict['processID']
-        self.resultPath     =  self.argsDict['resultPath']
+        self.resultPath     =  self.argsDict['resultPath'] + "/" + self.accession
         self.inputDir       =  self.findCommonPrefix(self.argsDict['sampleList'])
         self.singlePathList =  self.decouplePathList(self.argsDict['sampleList'])
 
@@ -109,7 +109,7 @@ class ArgsGenerator():
             args = [ config.bin['qa'], 
                      '|'.join(self.singlePathList),
                      config.local_config['local_qa'].format(self.processID),
-                     self.processID]
+                     self.accession]
 
             return [str(i) for i in args ]
         else:

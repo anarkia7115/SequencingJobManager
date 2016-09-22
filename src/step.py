@@ -28,7 +28,6 @@ class StepManager():
 
     def __init__(self, jobID, steps, ag, rs):
         self.jobID = jobID
-        self.accession = ag.getAccession()
         self.resultPath = ag.getResultPath()
         self.rs = rs
         self.stepIsError = False
@@ -106,7 +105,7 @@ class StepManager():
 
         # create request signal
         returnJson = dict()
-        returnJson['resultPath'] = self.resultPath + "/" + self.accession + "/result.zip" 
+        returnJson['resultPath'] = self.resultPath + "/result.zip" 
 
         # send request signal
         self.rs.send(returnJson, '/nosec/cluster/sampleAnalyzeResult')
@@ -124,7 +123,6 @@ class StepModel(object):
         self.step           = stepName
         self.requestSender  = requestSender
         self.args           = argsGenerator.generateArgs(self.step)
-        self.accession      = argsGenerator.getAccession()
         self.resultPath     = argsGenerator.getResultPath()
 
         self.isRunning = False
@@ -438,7 +436,7 @@ class PkgResultStep(StepModel):
         localIndel  = config.local_config['local_indel'].format(self.jobID)
 
         #localResult = config.local_config['local_result'].format(self.jobID) 
-        localResult = self.resultPath + "/" + self.accession
+        localResult = self.resultPath
         localZip    = localResult + '/result.zip'
 
         # remove unused files
