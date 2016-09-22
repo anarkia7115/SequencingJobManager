@@ -105,9 +105,7 @@ class StepManager():
 
         # create request signal
         returnJson = dict()
-        returnJson['resultPath'] = \
-        config.local_config['local_pkgResult'].format(self.jobID) + \
-        "/result.zip"
+        returnJson['resultPath'] = self.resultPath + "/result.zip" \
 
         # send request signal
         self.rs.send(returnJson, '/nosec/cluster/sampleAnalyzeResult')
