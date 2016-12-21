@@ -90,7 +90,8 @@ class StepManager():
 
         # TODO: do something to result path
 
-        self.cleanUp()
+        if not self.stepIsError:
+            self.cleanUp()
         return self.stepIsError
 
     def cleanUp(self):
@@ -99,8 +100,11 @@ class StepManager():
         client = hdfs.InsecureClient(
             url="http://{0}:50070".format(config.host['hdfshost']))
 
+        print "deleting hdfs.upload..."
         client.delete(config.hdfs_base['upload'].format(self.jobID), recursive=True)
+        print "deleting hdfs.align..."
         client.delete(config.hdfs_base['align'].format(self.jobID), recursive=True)
+        print "deleting hdfs.snv..."
         client.delete(config.hdfs_base['snv'].format(self.jobID), recursive=True)
 
         # create request signal
@@ -362,7 +366,7 @@ class PkgResultStep(StepModel):
 
         # get to local
         try:
-            os.mkdir(localPkg)
+            os.makedirs(localPkg)
         except OSError:
             print("{0} exists!".format(localPkg))
 
@@ -446,7 +450,7 @@ class PkgResultStep(StepModel):
 
         # zip files
         try:
-            os.mkdir(localResult)
+            os.makedirs(localResult)
         except OSError:
             print("{0} exists!".format(localResult))
 
