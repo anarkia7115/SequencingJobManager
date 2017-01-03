@@ -118,15 +118,19 @@ class PostHandler(BaseHTTPRequestHandler):
         return 
 
 def main():
-    dataString = """ { "processId":"0", "resultPath": "/online/GCBI/result", "sampleList": [ { "accession": "GCS1001", "fastqFile": [ { "mateFile1": { "filename": "line2_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line2_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R2.fastq.gz", "protocol": "file" } }, { "mateFile1": { "filename": "line1_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line1_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R2.fastq.gz", "protocol": "file" } } ], "genomeVersion": "hg38", "species": "hsa" } ], "sampleType": "WSG" } """
-    dataJson = json.loads(dataString)
-    jm = JobManager(dataJson)
+    import render
+    manifestFile = "./demo1.manifest"
+    manifest = render.FastqPair(manifestFile)
+
+    jsonInput = manifest.getFastqDataFrame("demo1")
+
+    jm = JobManager(jsonInput)
     jm.run()
     #print dataJson
 
 	
 
 if __name__ == "__main__":
-    #main()
-    rm = RequestMonitor()
-    rm.loop()
+    main()
+    #rm = RequestMonitor()
+    #rm.loop()
