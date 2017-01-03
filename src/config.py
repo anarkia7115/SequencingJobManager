@@ -11,7 +11,7 @@ host = dict(
 jar = dict(
      upload = "/online/home/GCBI/jars/halvade_upload-1.0-no_local-jar-with-dependencies.jar"
     ,align  = "/online/home/GCBI/jars/align_filter-wxz-1.0.jar"
-    ,snv    = "/online/home/GCBI/jars/snv_job-wxz-1.2.jar"
+    ,snv    = "/online/home/GCBI/snv_job-wxz-1.3.jar"
 )
 
 hdfs_base = dict(
@@ -38,9 +38,10 @@ hdfs_in = dict(
 )
 
 hdfs_config = dict(
-    empty_vcf  = "hdfs://{0}/tmp/dbsnp_138.hg38.vcf".format(host['hdfs'])
+    empty_vcf   = "hdfs://{0}/tmp/dbsnp_138.hg38.vcf".format(host['hdfs'])
+    ,vcf_gatk   = "hdfs://{0}/ref/hg38/dbsnp/dbsnp_146.hg38.vcf.gz".format(host['hdfs'])
     ,bin        = "hdfs://{0}/user/GCBI/bin.tar.gz".format(host['hdfs'])
-    ,ref        = "hdfs://{0}/ref/hg38/hg38".format(host['hdfs'])
+    ,ref        = "hdfs://{0}/ref/hg38/Homo_sapiens_assembly38".format(host['hdfs'])
     ,signal     = "hdfs://{0}/signal/sequencing_{1}".format(host['hdfs'], "{0}")
 )
 
