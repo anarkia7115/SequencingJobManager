@@ -26,7 +26,7 @@ class JobManager():
         return
 
     def run(self):
-        steps = ['distribution', 'align', 'variation', 'pkgResult', 'qa']
+        steps = ['variation', 'pkgResult', 'align', 'qa', 'distribution']
         #steps = ['pkgResult']
         #finishedSteps = ['distribution', 'align', 'variation', 'qa']
         finishedSteps = []
@@ -94,7 +94,12 @@ class PostHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         # string to json
-        self.data_json = json.loads(self.data_string)
+        print self.data_string
+        try:
+            self.data_json = json.loads(self.data_string)
+        except ValueError:
+            print("wrong json format")
+            return
 
         # start new job
         self.startNewJob()
@@ -113,9 +118,9 @@ class PostHandler(BaseHTTPRequestHandler):
         return 
 
 def main():
-    dataString = """ { "processId":"0", "resultPath": "/online/GCBI/result", "sampleList": [ { "accession": "GCS1001", "fastqFileList": [ { "mateFile1": { "filename": "line2_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line2_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R2.fastq.gz", "protocol": "file" } }, { "mateFile1": { "filename": "line1_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line1_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R2.fastq.gz", "protocol": "file" } } ], "genomeVersion": "hg38", "species": "hsa" } ], "sampleType": "WSG" } """
+    dataString = """ { "processId":"0", "resultPath": "/online/GCBI/result", "sampleList": [ { "accession": "GCS1001", "fastqFile": [ { "mateFile1": { "filename": "line2_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line2_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R2.fastq.gz", "protocol": "file" } }, { "mateFile1": { "filename": "line1_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line1_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R2.fastq.gz", "protocol": "file" } } ], "genomeVersion": "hg38", "species": "hsa" } ], "sampleType": "WSG" } """
     dataJson = json.loads(dataString)
-    jm = JobManager(0, dataJson)
+    jm = JobManager(dataJson)
     jm.run()
     #print dataJson
 
