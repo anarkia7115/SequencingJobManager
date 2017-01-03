@@ -56,9 +56,11 @@ class ArgsGenerator():
         elif step == 'align':
             # init args
             inputFile = config.hdfs_in['align'].format(self.processID)
+            #inputFile = "/user/GCBI/fastq/"
             outputFile = config.hdfs_out['align'].format(self.processID)
 
-            nonUseVcf = config.hdfs_config['empty_vcf']
+            #nonUseVcf = config.hdfs_config['empty_vcf']
+            gatkVcf = config.hdfs_config['vcf_gatk']
             binFile = config.hdfs_config['bin']
             ref = config.hdfs_config['ref']
             jarFile = config.jar['align']
@@ -71,19 +73,20 @@ class ArgsGenerator():
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
                     '-libjars', os.environ['LIBJARS'], 
                     '-I', inputFile, '-R', ref, '-O', outputFile, 
-                    '-B', binFile, '-D', nonUseVcf,
-                    '-RT', 'bcftools', '-mem', mem, '-report_all', 
+                    '-B', binFile, '-D', gatkVcf,
+                    '-mem', mem, 
                     '-nodes', nodes, '-vcores', vcores,
-                    '-tmp', tmpFile, '-aln', '1', '-smt']
+                    '-aln', '1', '-smt']
 
             return [str(i) for i in args ]
             
         elif step == 'variation':
             # init args
             inputFile = config.hdfs_in['snv'].format(self.processID)
+            #inputFile = "/user/GCBI/result_m/bamfiles"
             outputFile = config.hdfs_out['snv'].format(self.processID)
 
-            nonUseVcf = config.hdfs_config['empty_vcf']
+            gatkVcf = config.hdfs_config['vcf_gatk']
             binFile = config.hdfs_config['bin']
             ref = config.hdfs_config['ref']
             jarFile = config.jar['snv']
@@ -95,10 +98,10 @@ class ArgsGenerator():
             args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
                     '-libjars', os.environ['LIBJARS'], 
                     '-I', inputFile, '-R', ref, '-O', outputFile, 
-                    '-B', binFile, '-D', nonUseVcf,
-                    '-RT', 'bcftools', '-mem', mem, '-report_all', 
+                    '-B', binFile, '-D', gatkVcf,
+                    '-RT', 'GATK', '-refmem', '20' , '-mem', mem, '-report_all', 
                     '-nodes', nodes, '-vcores', vcores,
-                    '-aln', '1', '-smt']
+                    '-aln', '1', '-smt', '-hc']
 
             return [str(i) for i in args ]
 
