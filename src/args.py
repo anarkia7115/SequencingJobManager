@@ -133,6 +133,7 @@ class ArgsGenerator():
         sl = dataJson['sampleList'][0]
         for p in sl['fastqFile']:
             # parse keys
+            print p
             k1 = p['mateFile1']['key']
             k2 = p['mateFile2']['key']
             # pair to string
@@ -164,9 +165,23 @@ class ArgsGenerator():
 
         return prefix
 
+    def testInfo(self):
+        print """
+        InputDir: {0}
+        Accession: {1}
+        ProcessID: {2}
+        ResultPath: {3}
+        """.format(self.getInputDir(), 
+                   self.getAccession(), 
+                   self.getProcessID(),
+                   self.getResultPath())
+
 if __name__ == "__main__":
-    dataString = """ { "processId":"0", "resultPath": "/online/GCBI/result", "sampleList": [ { "accession": "GCS1001", "fastqFile": [ { "mateFile1": { "filename": "line2_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line2_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line2_R2.fastq.gz", "protocol": "file" } }, { "mateFile1": { "filename": "line1_R1.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R1.fastq.gz", "protocol": "file" }, "mateFile2": { "filename": "line1_R2.fastq.gz", "key": "/Users/Yvonne/Downloads/ch-gcbi/GCS1001/line1_R2.fastq.gz", "protocol": "file" } } ], "genomeVersion": "hg38", "species": "hsa" } ], "sampleType": "WSG" } """
-    import json
-    dataJson = json.loads(dataString)
-    ag = ArgsGenerator(dataJson)
+
+    import render
+    manifestFile = "./demo1.manifest"
+    fastqDataFrame = render.FastqPair(manifestFile)
+
+    ag = ArgsGenerator(fastqDataFrame.getFastqDataFrame("demo1"))
+    ag.testInfo()
 
