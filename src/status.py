@@ -115,8 +115,9 @@ class RequestSender():
 
         url = "http://{host}{path}".format(host=config.host['request'], path=path)
 
-        r = requests.post(url, json=dictJson)
-        print "[RequestSender] {0} posted to {1}".format(dictJson, url)
+        # disable post to url
+        #r = requests.post(url, json=dictJson)
+        print "[RequestSender] {0} (semi) posted to {1}".format(dictJson, url)
         return
 
 
