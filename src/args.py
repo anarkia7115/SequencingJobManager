@@ -95,7 +95,8 @@ class ArgsGenerator():
             mem = 110
 
             # generate args
-            args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
+            #, 'be.ugent.intec.halvade.Halvade'
+            args = ['hadoop', 'jar', jarFile, 
                     '-libjars', os.environ['LIBJARS'], 
                     '-I', inputFile, '-R', ref, '-O', outputFile, 
                     '-B', binFile, '-D', gatkVcf,
@@ -103,6 +104,7 @@ class ArgsGenerator():
                     '-nodes', nodes, '-vcores', vcores,
                     '-aln', '1', '-smt', '-hc']
 
+            print [str(i) for i in args ]
             return [str(i) for i in args ]
 
         elif step == 'pkgResult':
@@ -183,5 +185,7 @@ if __name__ == "__main__":
     fastqDataFrame = render.FastqPair(manifestFile)
 
     ag = ArgsGenerator(fastqDataFrame.getFastqDataFrame("demo1"))
+    alignArgs = ag.generateArgs("align")
     ag.testInfo()
+    print alignArgs
 
