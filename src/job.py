@@ -26,10 +26,10 @@ class JobManager():
         return
 
     def run(self):
-        steps = ['variation', 'pkgResult', 'align', 'qa', 'distribution']
-        #steps = ['pkgResult']
-        #finishedSteps = ['distribution', 'align', 'variation', 'qa']
-        finishedSteps = []
+        #steps = ['variation', 'pkgResult', 'align', 'qa', 'distribution']
+        steps = ['variation', 'pkgResult']
+        finishedSteps = ['distribution', 'align', 'qa']
+        #finishedSteps = []
 
         # start steps
         from step import StepManager
@@ -122,7 +122,8 @@ def main():
     manifestFile = "./demo1.manifest"
     manifest = render.FastqPair(manifestFile)
 
-    jsonInput = manifest.getFastqDataFrame("demo1")
+    processId = "demo1_2017-03-07_25099"
+    jsonInput = manifest.getFastqDataFrame("demo1", processId)
 
     jm = JobManager(jsonInput)
     jm.run()
