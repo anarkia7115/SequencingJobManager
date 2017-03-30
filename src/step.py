@@ -8,6 +8,7 @@ import subprocess
 import config
 from executor import CommandLineExecutor, HadoopAppExecutor
 from status import StatusChecker
+from time import gmtime, strftime
 
 def callStep(stepName, args):
     if stepName == 'distribution':
@@ -62,6 +63,8 @@ class StepManager():
                     cleanStatus = s.cleanUp()
                     if (s.isSuccess() and cleanStatus):
                         s.sendRequest(resultSucc=True, isStart=False)
+                        etime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                        print "[[end time]] {0}: {1}".format(s.getStepName(), etime)
                     else:
                         print "step {0} finished with error".format(s.getStepName())
                         self.stepIsError = True
@@ -78,6 +81,8 @@ class StepManager():
                     if(initStatus):
                         s.start()
                         print "{0} is started".format(s.getStepName())
+                        stime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                        print "[[start time]] {0}: {1}".format(s.getStepName(), stime)
                     else:
                         print "step {0} inited with error".format(s.getStepName())
                         self.stepIsError = True
