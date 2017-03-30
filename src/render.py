@@ -27,10 +27,15 @@ class FastqPair(object):
                 self.m1List.append(m1)
                 self.m2List.append(m2)
 
-    def genJsonFrame(self, sampleName):
+    def genJsonFrame(self, sampleName, processId=None):
         dateString = time.strftime("%Y-%m-%d")
         fj = dict()
-        fj["processId"] = "{0}_{1}".format(sampleName, dateString)
+        if processId is None:
+            fj["processId"] = "{0}_{1}_{2}".format(
+                    sampleName, dateString, os.getpid())
+        else:
+            fj["processId"] = processId
+
         fj["resultPath"] = "/online/GCBI/result"
 
         # generate fastqFileList
@@ -67,9 +72,9 @@ class FastqPair(object):
 
         self.fastqDataFrame = fj
 
-    def getFastqDataFrame(self, sampleName):
+    def getFastqDataFrame(self, sampleName, processId=None):
         self.parseManifest()
-        self.genJsonFrame(sampleName)
+        self.genJsonFrame(sampleName, processId)
         return self.fastqDataFrame
 
 
