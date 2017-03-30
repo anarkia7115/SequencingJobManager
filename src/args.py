@@ -90,9 +90,9 @@ class ArgsGenerator():
             binFile = config.hdfs_config['bin']
             ref = config.hdfs_config['ref']
             jarFile = config.jar['snv']
-            vcores = 30
+            vcores = 25
             nodes = 6
-            mem = 110
+            mem = 90
 
             # generate args
             #, 'be.ugent.intec.halvade.Halvade'
@@ -184,7 +184,10 @@ if __name__ == "__main__":
     manifestFile = "./demo1.manifest"
     fastqDataFrame = render.FastqPair(manifestFile)
 
-    ag = ArgsGenerator(fastqDataFrame.getFastqDataFrame("demo1"))
+    processId = "demo1_2017-03-07_25099"
+
+    ag = ArgsGenerator(
+        fastqDataFrame.getFastqDataFrame("demo1", processId))
     alignArgs = ag.generateArgs("align")
     ag.testInfo()
     print alignArgs
