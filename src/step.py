@@ -17,6 +17,8 @@ def callStep(stepName, args):
         return AlignStep(*args)
     elif stepName == 'variation':
         return VariationStep(*args)
+    elif stepName == 'merge':
+        return MergeStep(*args)
     elif stepName == 'qa':
         return QaStep(*args)
     elif stepName == 'pkgResult':
@@ -203,6 +205,29 @@ class DistributionStep(StepModel):
 
     def start(self):
         super(DistributionStep, self).start()
+        xqtr = CommandLineExecutor(self.args)
+        processHandle = xqtr.run()
+        self.statusChecker = StatusChecker(processHandle)
+
+        return processHandle
+
+    def cleanUp(self):
+        return True
+
+"""
+    Merge
+"""
+class MergeStep(StepModel):
+
+    def setPrerequisites(self):
+        self.prerequisites = set()
+        self.prerequisites.add("snv")
+
+    def stepInit(self):
+        return True
+
+    def start(self):
+        super(MergeStep, self).start()
         xqtr = CommandLineExecutor(self.args)
         processHandle = xqtr.run()
         self.statusChecker = StatusChecker(processHandle)
