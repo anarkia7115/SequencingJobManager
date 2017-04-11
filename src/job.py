@@ -26,10 +26,10 @@ class JobManager():
         return
 
     def run(self):
-        #steps = ['variation', 'pkgResult', 'align', 'qa', 'distribution']
-        steps = ['variation', 'pkgResult']
-        finishedSteps = ['distribution', 'align', 'qa']
-        #finishedSteps = []
+        steps = ['variation', 'pkgResult', 'align', 'qa', 'distribution']
+        #steps = ['variation', 'pkgResult']
+        #finishedSteps = ['distribution', 'align', 'qa']
+        finishedSteps = []
 
         # start steps
         from step import StepManager
@@ -132,6 +132,6 @@ def main():
 	
 
 if __name__ == "__main__":
-    main()
-    #rm = RequestMonitor()
-    #rm.loop()
+    #main()
+    rm = RequestMonitor()
+    rm.loop()
