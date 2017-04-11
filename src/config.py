@@ -11,7 +11,9 @@ host = dict(
 jar = dict(
      upload = "/online/home/GCBI/jars/halvade_upload-1.0-no_local-jar-with-dependencies.jar"
     ,align  = "/online/home/GCBI/jars/align_filter-wxz-1.0.jar"
-    ,snv    = "/online/home/GCBI/snv_job-wxz-1.3.jar"
+    ,snv    = "/online/home/GCBI/jars/snv_job-wxz-1.4.jar"
+    #,snv    = "/online/home/GCBI/jars/snv_job_first_phase.jar"
+    #,merge  = "/online/home/GCBI/jars/snv_job_second_phase.jar"
 )
 
 hdfs_base = dict(
