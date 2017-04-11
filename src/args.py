@@ -79,7 +79,7 @@ class ArgsGenerator():
                     '-aln', '1', '-smt']
 
             return [str(i) for i in args ]
-            
+
         elif step == 'variation':
             # init args
             inputFile = config.hdfs_in['snv'].format(self.processID)
@@ -96,7 +96,7 @@ class ArgsGenerator():
 
             # generate args
             #, 'be.ugent.intec.halvade.Halvade'
-            args = ['hadoop', 'jar', jarFile, 
+            args = ['hadoop', 'jar', jarFile, 'be.ugent.intec.halvade.Halvade', 
                     '-libjars', os.environ['LIBJARS'], 
                     '-I', inputFile, '-R', ref, '-O', outputFile, 
                     '-B', binFile, '-D', gatkVcf,
@@ -106,6 +106,38 @@ class ArgsGenerator():
 
             print [str(i) for i in args ]
             return [str(i) for i in args ]
+
+        elif step == 'merge':
+
+            """
+            elif step == 'merge':
+                # init args
+                inputFile = config.hdfs_in['snv'].format(self.processID)
+                #inputFile = "/user/GCBI/result_m/bamfiles"
+                outputFile = config.hdfs_out['snv'].format(self.processID)
+    
+                gatkVcf = config.hdfs_config['vcf_gatk']
+                binFile = config.hdfs_config['bin']
+                ref = config.hdfs_config['ref']
+                jarFile = config.jar['merge']
+                vcores = 25
+                nodes = 6
+                mem = 90
+    
+                # generate args
+                #, 'be.ugent.intec.halvade.Halvade'
+                args = ['hadoop', 'jar', jarFile, 
+                        '-libjars', os.environ['LIBJARS'], 
+                        '-I', inputFile, '-R', ref, '-O', outputFile, 
+                        '-B', binFile, '-D', gatkVcf,
+                        '-RT', 'GATK', '-refmem', '20' , '-mem', mem, '-report_all', 
+                        '-nodes', nodes, '-vcores', vcores,
+                        '-aln', '1', '-smt', '-hc']
+    
+                print [str(i) for i in args ]
+                return [str(i) for i in args ]
+            """
+            return ["sleep", "1"]
 
         elif step == 'pkgResult':
             return []
